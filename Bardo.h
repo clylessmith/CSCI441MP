@@ -30,9 +30,12 @@ public:
 
     void rotate(GLfloat theta);
 
-private:
+    glm::vec3 coords;
     /// \desc current angle of rotation for bardo
     GLfloat _bardoAngle;
+
+private:
+
 
 
     /// \desc handle of the shader program to use when drawing bardo

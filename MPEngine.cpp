@@ -30,7 +30,7 @@ MPEngine::MPEngine()
 
     _mousePosition = glm::vec2(MOUSE_UNINITIALIZED, MOUSE_UNINITIALIZED );
     _leftMouseButtonState = GLFW_RELEASE;
-    _bardoCoords = glm::vec3(0,0,0);
+    _heroCoords = glm::vec3(0, 0, 0);
     _idleTrans = 0.01;
     _orbHover = 0.01;
     _currentHero = 1;
@@ -222,12 +222,12 @@ void MPEngine::_generateEnvironment() {
     for(int i = LEFT_END_POINT; i < RIGHT_END_POINT; i += GRID_SPACING_WIDTH) {
         for(int j = BOTTOM_END_POINT; j < TOP_END_POINT; j += GRID_SPACING_LENGTH) {
             // don't just draw a building ANYWHERE.
-            if( i % 2 && j % 2 && getRand() < 0.01f ) {
+            if( i % 2 && j % 2 && getRand() < 0.005f ) {
                 // translate to spot
                 glm::mat4 transToSpotMtx = glm::translate( glm::mat4(1.0), glm::vec3(i, 0.0f, j) );
 
                 // compute random height
-                GLdouble height = powf(getRand(), 2.5)*50 + 20;
+                GLdouble height = powf(getRand(), 2.5)*25 + 20;
 
                 // scale to building size
                 glm::mat4 scaleToHeightMtx = glm::scale( glm::mat4(1.0), glm::vec3(1, height, 1) );
@@ -249,11 +249,12 @@ void MPEngine::_generateEnvironment() {
 }
 
 void MPEngine::mSetupScene() {
+
     _pArcballCam = new ArcballCam();
     _pArcballCam->setTheta(M_PI / 3.5f );
     _pArcballCam->setPhi(2*M_PI / 4.0f );
     _pArcballCam->setRadius(17.0f);
-    _pArcballCam->setLookAtPoint(glm::vec3(_bardoCoords[0], 4, _bardoCoords[2]));
+    _pArcballCam->setLookAtPoint(glm::vec3(_heroCoords[0], 4, _heroCoords[2]));
     _pArcballCam->recomputeOrientation();
 
     _cameraSpeed = glm::vec2(0.25f, 0.02f);
@@ -337,9 +338,9 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
     //// BEGIN DRAWING BARDO ////
     glm::mat4 modelMtx(1.0f);
     // draw bardo at known coords
-    modelMtx = glm::translate(modelMtx, glm::vec3(_bardoCoords[0], 1, _bardoCoords[2]) );
+    modelMtx = glm::translate(modelMtx, glm::vec3(_bardo->coords[0], 1, _bardo->coords[2]) );
     // rotate bardo when drawn
-    modelMtx = glm::rotate(modelMtx, _bardoTheta, CSCI441::Y_AXIS );
+    modelMtx = glm::rotate(modelMtx, _bardo->_bardoAngle, CSCI441::Y_AXIS );
     // draw our plane now
     _bardo->drawBardo(modelMtx, viewMtx, projMtx, _idleTrans, _orbAngle, _orbHover);
     //// END DRAWING BARDO ////
@@ -347,6 +348,8 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
 }
 
 void MPEngine::_updateScene() {
+
+    // animation for Bardo
     if (_framesPassedOrb == 4) {
         _framesPassedOrb = 0;
         if (_orbAngle > glm::two_pi<float>()) {
@@ -365,93 +368,127 @@ void MPEngine::_updateScene() {
         _framesPassedHover++;
     }
 
-    // turn right
+    // turn hero right
     if( _keys[GLFW_KEY_D] ) {
-        _bardoTheta -= _cameraSpeed.y;
-        _bardo->rotate(_bardoTheta);
+        _heroTheta -= _cameraSpeed.y;
+        _pArcballCam->setLookAtPoint(_heroCoords);
+        _pArcballCam->recomputeOrientation();
     }
-    // turn left
+    // turn hero left
     if( _keys[GLFW_KEY_A] ) {
-        _bardoTheta += _cameraSpeed.y;
-        _bardo->rotate(_bardoTheta);
+        _heroTheta += _cameraSpeed.y;
+        _pArcballCam->setLookAtPoint(_heroCoords);
+        _pArcballCam->recomputeOrientation();
     }
-    // move forward
+    // move hero forward
     if( _keys[GLFW_KEY_W]) {
-        if (_framesPassed == 28) {
-            _framesPassed = 0;
-            _idleTrans *= -1;
-        }
-        else {
-            _framesPassed++;
-        }
-        float xMove = _bardoCoords[0]  + glm::cos(_bardoTheta) * _cameraSpeed.x;
-        float zMove = _bardoCoords[2] - glm::sin(_bardoTheta) * _cameraSpeed.x;
+
+        float xMove = _heroCoords[0] + glm::cos(_heroTheta) * _cameraSpeed.x;
+        float zMove = _heroCoords[2] - glm::sin(_heroTheta) * _cameraSpeed.x;
         if (xMove <= -WORLD_SIZE || xMove >= WORLD_SIZE) {
-            xMove = _bardoCoords[0];
+            xMove = _heroCoords[0];
         }
         if (zMove <= -WORLD_SIZE || zMove >= WORLD_SIZE) {
-            zMove = _bardoCoords[2];
+            zMove = _heroCoords[2];
         }
-        _bardoCoords = glm::vec3(xMove,
-                                 _bardoCoords[1],
-                                 zMove);
-        _pArcballCam->setLookAtPoint(_bardoCoords);
-        _bardo->moveForward(_bardoTheta);
+        _heroCoords = glm::vec3(xMove,
+                                _heroCoords[1],
+                                zMove);
+        switch (_currentHero) {
+            case 1:
+                if (_framesPassed == 28) {
+                    _framesPassed = 0;
+                    _idleTrans *= -1;
+                }
+                else {
+                    _framesPassed++;
+                }
+                _bardo->moveForward(_heroTheta);
+                break;
+            default:
+                break;
+        }
+        _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
+
     }
-    // move backward
+
+    // move hero backward
     if( _keys[GLFW_KEY_S] ) {
-        if (_framesPassed == 28) {
-            _framesPassed = 0;
-            _idleTrans *= -1;
-        }
-        else {
-            _framesPassed++;
-        }
-        float xMove = _bardoCoords[0]  - glm::cos(_bardoTheta) * _cameraSpeed.x;
-        float zMove = _bardoCoords[2] + glm::sin(_bardoTheta) * _cameraSpeed.x;
+
+        float xMove = _heroCoords[0] - glm::cos(_heroTheta) * _cameraSpeed.x;
+        float zMove = _heroCoords[2] + glm::sin(_heroTheta) * _cameraSpeed.x;
         if (xMove <= -WORLD_SIZE || xMove >= WORLD_SIZE) {
-            xMove = _bardoCoords[0];
+            xMove = _heroCoords[0];
         }
         if (zMove <= -WORLD_SIZE || zMove >= WORLD_SIZE) {
-            zMove = _bardoCoords[2];
+            zMove = _heroCoords[2];
         }
-        _bardoCoords = glm::vec3(xMove,
-                                 _bardoCoords[1],
-                                 zMove);
-        _pArcballCam->setLookAtPoint(_bardoCoords);
-        _bardo->moveBackward(_bardoTheta);
+        _heroCoords = glm::vec3(xMove,
+                                _heroCoords[1],
+                                zMove);
+
+        switch (_currentHero) {
+            case 1:
+                if (_framesPassed == 28) {
+                    _framesPassed = 0;
+                    _idleTrans *= -1;
+                }
+                else {
+                    _framesPassed++;
+                }
+                _bardo->moveBackward(_heroTheta);
+                break;
+            default:
+                break;
+        }
+        _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
     }
-    // turn right
+
+    switch (_currentHero) {
+        case 1:
+            _bardo->rotate(_heroTheta);
+            _bardo->coords = _heroCoords;
+            break;
+        default:
+            break;
+    }
+
+
+    // turn camera right
     if( _keys[GLFW_KEY_RIGHT] ) {
         _pFreeCam->rotate(_cameraSpeed.y, 0.0f);
     }
-    // turn left
+    // turn camera left
     if(_keys[GLFW_KEY_LEFT] ) {
         _pFreeCam->rotate(-_cameraSpeed.y, 0.0f);
     }
-    // pitch up
+    // pitch camera up
     if(  _keys[GLFW_KEY_UP] ) {
         _pFreeCam->rotate(0.0f, _cameraSpeed.y);
     }
-    // pitch down
+    // pitch camera down
     if( _keys[GLFW_KEY_DOWN] ) {
         _pFreeCam->rotate(0.0f, -_cameraSpeed.y);
     }
     if( _keys[GLFW_KEY_SPACE] ) {
         // go backward if shift held down
         if( _keys[GLFW_KEY_RIGHT_SHIFT] ) {
-            _pFreeCam->moveBackward(_cameraSpeed.x);
+            _pFreeCam->moveBackward(_cameraSpeed.x * 2.5);
         }
             // go forward
         else {
-            _pFreeCam->moveForward(_cameraSpeed.x);
+            _pFreeCam->moveForward(_cameraSpeed.x * 2.5);
         }
     }
 
+
+
     if (_keys[GLFW_KEY_1]) {
         _currentHero = 1;
+        _heroCoords = _bardo->coords;
+        _heroTheta = _bardo->_bardoAngle;
     }
     if (_keys[GLFW_KEY_2]) {
         _currentHero = 2;
@@ -465,8 +502,8 @@ void MPEngine::_updateScene() {
     if (_keys[GLFW_KEY_5]) {
         _currentCamera = 5;
     }
-    if (_keys[GLFW_KEY_1]) {
-        _currentCamera = 5;
+    if (_keys[GLFW_KEY_6]) {
+        _currentCamera = 6;
     }
 
 }
@@ -489,13 +526,15 @@ void MPEngine::run() {
         glViewport( 0, 0, framebufferWidth, framebufferHeight );
 
         // draw everything to the window
-        if (_currentCamera == 4) {
-            _renderScene(_pArcballCam->getViewMatrix(), _pArcballCam->getProjectionMatrix());
-        }
-        else if (_currentCamera == 5) {
-            _renderScene(_pFreeCam->getViewMatrix(), _pFreeCam->getProjectionMatrix());
-        }
+        switch (_currentCamera) {
+            case 4:
+                _renderScene(_pArcballCam->getViewMatrix(), _pArcballCam->getProjectionMatrix());
+                break;
+            case 5:
+                _renderScene(_pFreeCam->getViewMatrix(), _pFreeCam->getProjectionMatrix());
+                break;
 
+        }
         _updateScene();
 
         glfwSwapBuffers(mpWindow);                       // flush the OpenGL commands and make sure they get rendered!
@@ -525,8 +564,9 @@ void MPEngine::_drawTree(MPEngine::BuildingData building, glm::mat4 viewMtx, glm
 
     CSCI441::drawSolidCube(1.0);
 
-    glm::mat4 modelMtx1 = glm::scale(building.modelMatrix, glm::vec3(4.0f, building.treeHeight * 0.4, 4.0f));
-    modelMtx1 = glm::translate(modelMtx1, glm::vec3(0, building.treeHeight * 0.0025, 0));
+    glm::mat4 modelMtx1 = modelMtx1 = glm::translate(modelMtx1, glm::vec3(0, building.treeHeight * 0.005, 0));;
+    modelMtx1 = glm::scale(building.modelMatrix, glm::vec3(4.0f, building.treeHeight * 0.4, 4.0f));
+
 
     glm::vec3 leafColor = glm::vec3(0.02f, 0.22f, 0.02f);
 

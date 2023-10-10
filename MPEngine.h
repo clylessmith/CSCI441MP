@@ -75,8 +75,8 @@ private:
     Bardo* _bardo;
 
     /// \desc Bardo's location in the world
-    glm::vec3 _bardoCoords;
-    GLfloat _bardoTheta;
+    glm::vec3 _heroCoords;
+    GLfloat _heroTheta;
 
     /// \desc the size of the world (controls the ground size and locations of buildings)
     static constexpr GLfloat WORLD_SIZE = 200.0f;

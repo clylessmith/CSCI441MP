@@ -76,18 +76,18 @@ void Bardo::drawBardo(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx, 
     _drawStaff(modelMtx, viewMtx, projMtx, idleTrans * 0.5, orbAngle, orbHover);   // Bardo's magic staff
 }
 
-void Bardo::moveForward(GLfloat theta) {
+void Bardo::moveForward(GLfloat thetaIn) {
     if(_bardoAngle > _2PI ) _bardoAngle -= _2PI;
-    _bardoAngle = theta;
+    _bardoAngle = thetaIn;
 }
 
-void Bardo::moveBackward(GLfloat theta) {
+void Bardo::moveBackward(GLfloat thetaIn) {
     if(_bardoAngle < 0.0f ) _bardoAngle += _2PI;
-    _bardoAngle = theta;
+    _bardoAngle = thetaIn;
 }
 
-void Bardo::rotate(GLfloat theta) {
-    _bardoAngle = theta;
+void Bardo::rotate(GLfloat thetaIn) {
+    _bardoAngle = thetaIn;
 }
 
 void Bardo::_drawBardoBody(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx ) const {
