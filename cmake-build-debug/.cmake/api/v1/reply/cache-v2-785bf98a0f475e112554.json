@@ -1136,42 +1136,6 @@
 			],
 			"type" : "STATIC",
 			"value" : "/Users/camdenlyles-smith/Desktop/School/CSCI_441 /fellowship_of_the_bling_MP"
-		},
-		{
-			"name" : "a3_BINARY_DIR",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "/Users/camdenlyles-smith/Desktop/School/CSCI_441 /fellowship_of_the_bling_MP/cmake-build-debug"
-		},
-		{
-			"name" : "a3_IS_TOP_LEVEL",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "ON"
-		},
-		{
-			"name" : "a3_SOURCE_DIR",
-			"properties" : 
-			[
-				{
-					"name" : "HELPSTRING",
-					"value" : "Value Computed by CMake"
-				}
-			],
-			"type" : "STATIC",
-			"value" : "/Users/camdenlyles-smith/Desktop/School/CSCI_441 /fellowship_of_the_bling_MP"
 		}
 	],
 	"kind" : "cache",

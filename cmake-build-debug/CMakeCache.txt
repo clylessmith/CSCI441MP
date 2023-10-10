@@ -219,15 +219,6 @@ MP_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 MP_SOURCE_DIR:STATIC=/Users/camdenlyles-smith/Desktop/School/CSCI_441 /fellowship_of_the_bling_MP
 
-//Value Computed by CMake
-a3_BINARY_DIR:STATIC=/Users/camdenlyles-smith/Desktop/School/CSCI_441 /fellowship_of_the_bling_MP/cmake-build-debug
-
-//Value Computed by CMake
-a3_IS_TOP_LEVEL:STATIC=ON
-
-//Value Computed by CMake
-a3_SOURCE_DIR:STATIC=/Users/camdenlyles-smith/Desktop/School/CSCI_441 /fellowship_of_the_bling_MP
-
 
 ########################
 # INTERNAL cache entries
