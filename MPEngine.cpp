@@ -33,10 +33,13 @@ MPEngine::MPEngine()
     _bardoCoords = glm::vec3(0,0,0);
     _idleTrans = 0.01;
     _orbHover = 0.01;
+    _currentHero = 1;
+    _currentCamera = 4;
 }
 
 MPEngine::~MPEngine() {
     delete _pArcballCam;
+    delete _pFreeCam;
 }
 
 void MPEngine::handleKeyEvent(GLint key, GLint action) {
@@ -74,18 +77,28 @@ void MPEngine::handleCursorPositionEvent(glm::vec2 currMousePosition) {
     if(_leftMouseButtonState == GLFW_PRESS) {
 
         if ( _keys[GLFW_KEY_LEFT_SHIFT]) {
-            float mouseChange = _mousePosition.y - currMousePosition.y ;
-            if (mouseChange > 0) {
-                _pArcballCam->moveForward(mouseChange * 0.1f);
+            if (_currentCamera == 4) {
+                float mouseChange = _mousePosition.y - currMousePosition.y ;
+                if (mouseChange > 0) {
+                    _pArcballCam->moveForward(mouseChange * 0.1f);
+                }
+                else if (mouseChange < 0) {
+                    _pArcballCam->moveBackward(-mouseChange * 0.1f);
+                }
             }
-            else if (mouseChange < 0) {
-                _pArcballCam->moveBackward(-mouseChange * 0.1f);
-            }
+
         }
         else {
-            // rotate the camera by the distance the mouse moved
-            _pArcballCam->rotate(( currMousePosition.x  - _mousePosition.x ) * 0.005f,
-                                 (_mousePosition.y - currMousePosition.y) * 0.005f );
+            if (_currentCamera == 4) {
+                // rotate the camera by the distance the mouse moved
+                _pArcballCam->rotate(( currMousePosition.x  - _mousePosition.x ) * 0.005f,
+                                     (_mousePosition.y - currMousePosition.y) * 0.005f );
+            }
+            else if (_currentCamera == 5) {
+                // rotate the camera by the distance the mouse moved
+                _pFreeCam->rotate((currMousePosition.x - _mousePosition.x) * 0.005f,
+                                  (_mousePosition.y - currMousePosition.y) * 0.005f );
+            }
 
         }
 
@@ -137,7 +150,7 @@ void MPEngine::mSetupBuffers() {
     // need to connect our 3D Object Library to our shader
     CSCI441::setVertexAttributeLocations( _lightingShaderAttributeLocations.vPos, _lightingShaderAttributeLocations.vertexNormal );
 
-    // give the plane the normal matrix location
+    // give bardo the normal matrix location
     _bardo = new Bardo(_lightingShaderProgram->getShaderProgramHandle(),
                        _lightingShaderUniformLocations.mvpMatrix,
                        _lightingShaderUniformLocations.normalMatrix,
@@ -245,6 +258,13 @@ void MPEngine::mSetupScene() {
 
     _cameraSpeed = glm::vec2(0.25f, 0.02f);
 
+    _pFreeCam= new CSCI441::FreeCam();
+    _pFreeCam->setPosition(glm::vec3(60.0f, 40.0f, 30.0f) );
+    _pFreeCam->setTheta(-M_PI / 3.0f );
+    _pFreeCam->setPhi(M_PI / 2.8f );
+    _pFreeCam->recomputeOrientation();
+    _cameraSpeed = glm::vec2(0.25f, 0.02f);
+
     // set lighting uniforms
     glm::vec3 lightDirection = glm::vec3(-1,-1,-1);
     glm::vec3 lightColor = glm::vec3(1,1,1);
@@ -346,17 +366,17 @@ void MPEngine::_updateScene() {
     }
 
     // turn right
-    if( _keys[GLFW_KEY_D] || _keys[GLFW_KEY_RIGHT] ) {
+    if( _keys[GLFW_KEY_D] ) {
         _bardoTheta -= _cameraSpeed.y;
         _bardo->rotate(_bardoTheta);
     }
     // turn left
-    if( _keys[GLFW_KEY_A] || _keys[GLFW_KEY_LEFT] ) {
+    if( _keys[GLFW_KEY_A] ) {
         _bardoTheta += _cameraSpeed.y;
         _bardo->rotate(_bardoTheta);
     }
     // move forward
-    if( _keys[GLFW_KEY_W] || _keys[GLFW_KEY_UP] ) {
+    if( _keys[GLFW_KEY_W]) {
         if (_framesPassed == 28) {
             _framesPassed = 0;
             _idleTrans *= -1;
@@ -380,7 +400,7 @@ void MPEngine::_updateScene() {
         _pArcballCam->recomputeOrientation();
     }
     // move backward
-    if( _keys[GLFW_KEY_S] || _keys[GLFW_KEY_DOWN] ) {
+    if( _keys[GLFW_KEY_S] ) {
         if (_framesPassed == 28) {
             _framesPassed = 0;
             _idleTrans *= -1;
@@ -403,6 +423,51 @@ void MPEngine::_updateScene() {
         _bardo->moveBackward(_bardoTheta);
         _pArcballCam->recomputeOrientation();
     }
+    // turn right
+    if( _keys[GLFW_KEY_RIGHT] ) {
+        _pFreeCam->rotate(_cameraSpeed.y, 0.0f);
+    }
+    // turn left
+    if(_keys[GLFW_KEY_LEFT] ) {
+        _pFreeCam->rotate(-_cameraSpeed.y, 0.0f);
+    }
+    // pitch up
+    if(  _keys[GLFW_KEY_UP] ) {
+        _pFreeCam->rotate(0.0f, _cameraSpeed.y);
+    }
+    // pitch down
+    if( _keys[GLFW_KEY_DOWN] ) {
+        _pFreeCam->rotate(0.0f, -_cameraSpeed.y);
+    }
+    if( _keys[GLFW_KEY_SPACE] ) {
+        // go backward if shift held down
+        if( _keys[GLFW_KEY_RIGHT_SHIFT] ) {
+            _pFreeCam->moveBackward(_cameraSpeed.x);
+        }
+            // go forward
+        else {
+            _pFreeCam->moveForward(_cameraSpeed.x);
+        }
+    }
+
+    if (_keys[GLFW_KEY_1]) {
+        _currentHero = 1;
+    }
+    if (_keys[GLFW_KEY_2]) {
+        _currentHero = 2;
+    }
+    if (_keys[GLFW_KEY_3]) {
+        _currentHero = 3;
+    }
+    if (_keys[GLFW_KEY_4]) {
+        _currentCamera = 4;
+    }
+    if (_keys[GLFW_KEY_5]) {
+        _currentCamera = 5;
+    }
+    if (_keys[GLFW_KEY_1]) {
+        _currentCamera = 5;
+    }
 
 }
 
@@ -424,7 +489,12 @@ void MPEngine::run() {
         glViewport( 0, 0, framebufferWidth, framebufferHeight );
 
         // draw everything to the window
-        _renderScene(_pArcballCam->getViewMatrix(), _pArcballCam->getProjectionMatrix());
+        if (_currentCamera == 4) {
+            _renderScene(_pArcballCam->getViewMatrix(), _pArcballCam->getProjectionMatrix());
+        }
+        else if (_currentCamera == 5) {
+            _renderScene(_pFreeCam->getViewMatrix(), _pFreeCam->getProjectionMatrix());
+        }
 
         _updateScene();
 
