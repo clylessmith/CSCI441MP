@@ -68,6 +68,9 @@ private:
     /// \brief x = forward/backward delta, y = rotational delta
     glm::vec2 _cameraSpeed;
 
+    /// \desc the free camera
+    CSCI441::FreeCam *_pFreeCam;
+
     /// \desc bardo hero model
     Bardo* _bardo;
 
@@ -96,7 +99,8 @@ private:
     /// \desc information list of all the buildings to draw
     std::vector<BuildingData> _buildings;
 
-
+    int _currentHero;
+    int _currentCamera;
 
     /// \desc generates building information to make up our scene
     void _generateEnvironment();

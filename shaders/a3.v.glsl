@@ -35,5 +35,5 @@ void main() {
     vec3 iDiffuse = lightColor * materialColor * (dot(lightVector, vNormalNew) > 0 ? dot(lightVector, vNormalNew) : 0);
 
     // assign the color for this vertex
-    color = iDiffuse;
+    color = materialColor;
 }
