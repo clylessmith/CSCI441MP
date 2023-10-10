@@ -30,9 +30,9 @@ public:
 
     void rotate(GLfloat theta);
 
-    glm::vec3 coords;
+    glm::vec3 coords = {0.0f, 0.0f, 0.0f};
     /// \desc current angle of rotation for bardo
-    GLfloat _bardoAngle;
+    GLfloat _bardoAngle = 0.0f;
 
 private:
 

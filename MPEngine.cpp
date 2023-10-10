@@ -351,7 +351,7 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
 
     glm::mat4 modelMtx1(1.0f);
     // draw peanut at known coords
-    modelMtx1 = glm::translate(modelMtx, glm::vec3(_peanut->getPosition()[0], 1, _peanut->getPosition()[2] + 15) );
+    modelMtx1 = glm::translate(modelMtx1, glm::vec3(_peanut->getPosition()[0], 1, _peanut->getPosition()[2]) );
     // rotate peanut when drawn
     modelMtx1 = glm::rotate(modelMtx1, _peanut->getTheta(), CSCI441::Y_AXIS );
     _peanut->drawPeanut(modelMtx1, viewMtx, projMtx);
@@ -497,16 +497,19 @@ void MPEngine::_updateScene() {
     // select camera and hero
     if (_keys[GLFW_KEY_1]) {
         _currentHero = 1;
+        _currentCamera = 4;
         _heroCoords = _bardo->coords;
         _heroTheta = _bardo->_bardoAngle;
     }
     if (_keys[GLFW_KEY_2]) {
         _currentHero = 2;
+        _currentCamera = 4;
         _heroCoords = _peanut->getPosition();
         _heroTheta = _peanut->getTheta();
     }
     if (_keys[GLFW_KEY_3]) {
         _currentHero = 3;
+        _currentCamera = 4;
     }
     if (_keys[GLFW_KEY_4]) {
         _currentCamera = 4;

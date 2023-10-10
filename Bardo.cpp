@@ -78,7 +78,7 @@ void Bardo::drawBardo(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx, 
 
 void Bardo::moveForward(GLfloat thetaIn, GLfloat worldSize, glm::vec2 moveSpeed) {
     if(_bardoAngle > _2PI ) _bardoAngle -= _2PI;
-    _bardoAngle += thetaIn;
+    _bardoAngle = thetaIn;
     float xMove = coords[0] + glm::cos(_bardoAngle) * moveSpeed.x;
     float zMove = coords[2] - glm::sin(_bardoAngle) * moveSpeed.x;
 
@@ -95,7 +95,7 @@ void Bardo::moveForward(GLfloat thetaIn, GLfloat worldSize, glm::vec2 moveSpeed)
 
 void Bardo::moveBackward(GLfloat thetaIn, GLfloat worldSize, glm::vec2 moveSpeed) {
     if(_bardoAngle < 0.0f ) _bardoAngle += _2PI;
-    _bardoAngle += thetaIn;
+    _bardoAngle = thetaIn;
 
     float xMove = coords[0] - glm::cos(_bardoAngle) * moveSpeed.x;
     float zMove = coords[2] + glm::sin(_bardoAngle) * moveSpeed.x;
