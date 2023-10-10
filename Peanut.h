@@ -30,6 +30,7 @@ public:
     GLfloat getTheta() {return _charTheta;}
     glm::vec3 getDirection() {return _charDirection;}
     glm::vec3 getPosition() {return _charPosition;}
+    void setPosition(glm::vec3 pos) {_charPosition = pos;};
 
 private:
 
