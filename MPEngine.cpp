@@ -258,7 +258,7 @@ void MPEngine::mSetupScene() {
     _pArcballCam = new ArcballCam();
     _pArcballCam->setTheta(M_PI / 3.5f );
     _pArcballCam->setPhi(2*M_PI / 4.0f );
-    _pArcballCam->setRadius(17.0f);
+    _pArcballCam->setRadius(25.0f);
     _pArcballCam->setLookAtPoint(glm::vec3(_heroCoords[0], 4, _heroCoords[2]));
     _pArcballCam->recomputeOrientation();
 
@@ -348,7 +348,13 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
     modelMtx = glm::rotate(modelMtx, _bardo->_bardoAngle, CSCI441::Y_AXIS );
     // draw our plane now
     _bardo->drawBardo(modelMtx, viewMtx, projMtx, _idleTrans, _orbAngle, _orbHover);
-    _peanut->drawPeanut(glm::mat4(1.0f), viewMtx, projMtx);
+
+    glm::mat4 modelMtx1(1.0f);
+    // draw peanut at known coords
+    modelMtx1 = glm::translate(modelMtx, glm::vec3(_peanut->getPosition()[0], 1, _peanut->getPosition()[2] + 15) );
+    // rotate peanut when drawn
+    modelMtx1 = glm::rotate(modelMtx1, _peanut->getTheta(), CSCI441::Y_AXIS );
+    _peanut->drawPeanut(modelMtx1, viewMtx, projMtx);
     //// END DRAWING BARDO ////
 
 }
@@ -376,30 +382,40 @@ void MPEngine::_updateScene() {
 
     // turn hero right
     if( _keys[GLFW_KEY_D] ) {
-        _heroTheta -= _cameraSpeed.y;
+        _heroTheta = -_cameraSpeed.y;
+
+        switch (_currentHero) {
+            case 1:
+                _bardo->rotate(_heroTheta);
+                break;
+            case 2:
+                _peanut->rotate(_heroTheta);
+                break;
+            default:
+                break;
+        }
         _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
     }
     // turn hero left
     if( _keys[GLFW_KEY_A] ) {
-        _heroTheta += _cameraSpeed.y;
+        _heroTheta = _cameraSpeed.y;
+
+        switch (_currentHero) {
+            case 1:
+                _bardo->rotate(_heroTheta);
+                break;
+            case 2:
+                _peanut->rotate(_heroTheta);
+                break;
+            default:
+                break;
+        }
         _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
     }
     // move hero forward
     if( _keys[GLFW_KEY_W]) {
-
-        float xMove = _heroCoords[0] + glm::cos(_heroTheta) * _cameraSpeed.x;
-        float zMove = _heroCoords[2] - glm::sin(_heroTheta) * _cameraSpeed.x;
-        if (xMove <= -WORLD_SIZE || xMove >= WORLD_SIZE) {
-            xMove = _heroCoords[0];
-        }
-        if (zMove <= -WORLD_SIZE || zMove >= WORLD_SIZE) {
-            zMove = _heroCoords[2];
-        }
-        _heroCoords = glm::vec3(xMove,
-                                _heroCoords[1],
-                                zMove);
         switch (_currentHero) {
             case 1:
                 if (_framesPassed == 28) {
@@ -409,11 +425,16 @@ void MPEngine::_updateScene() {
                 else {
                     _framesPassed++;
                 }
-                _bardo->moveForward(_heroTheta);
+                _bardo->moveForward(_heroTheta, WORLD_SIZE, _cameraSpeed);
+                _heroCoords = _bardo->coords;
                 break;
+            case 2:
+                _peanut->moveForward();
+                _heroCoords = _peanut->getPosition();
             default:
                 break;
         }
+
         _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
 
@@ -421,19 +442,6 @@ void MPEngine::_updateScene() {
 
     // move hero backward
     if( _keys[GLFW_KEY_S] ) {
-
-        float xMove = _heroCoords[0] - glm::cos(_heroTheta) * _cameraSpeed.x;
-        float zMove = _heroCoords[2] + glm::sin(_heroTheta) * _cameraSpeed.x;
-        if (xMove <= -WORLD_SIZE || xMove >= WORLD_SIZE) {
-            xMove = _heroCoords[0];
-        }
-        if (zMove <= -WORLD_SIZE || zMove >= WORLD_SIZE) {
-            zMove = _heroCoords[2];
-        }
-        _heroCoords = glm::vec3(xMove,
-                                _heroCoords[1],
-                                zMove);
-
         switch (_currentHero) {
             case 1:
                 if (_framesPassed == 28) {
@@ -443,22 +451,18 @@ void MPEngine::_updateScene() {
                 else {
                     _framesPassed++;
                 }
-                _bardo->moveBackward(_heroTheta);
+                _bardo->moveBackward(_heroTheta, WORLD_SIZE, _cameraSpeed);
+                _heroCoords = _bardo->coords;
+                break;
+            case 2:
+                _peanut->moveBackward();
+                _heroCoords = _peanut->getPosition();
                 break;
             default:
                 break;
         }
         _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
-    }
-
-    switch (_currentHero) {
-        case 1:
-            _bardo->rotate(_heroTheta);
-            _bardo->coords = _heroCoords;
-            break;
-        default:
-            break;
     }
 
 
@@ -490,7 +494,7 @@ void MPEngine::_updateScene() {
     }
 
 
-
+    // select camera and hero
     if (_keys[GLFW_KEY_1]) {
         _currentHero = 1;
         _heroCoords = _bardo->coords;
@@ -498,6 +502,8 @@ void MPEngine::_updateScene() {
     }
     if (_keys[GLFW_KEY_2]) {
         _currentHero = 2;
+        _heroCoords = _peanut->getPosition();
+        _heroTheta = _peanut->getTheta();
     }
     if (_keys[GLFW_KEY_3]) {
         _currentHero = 3;

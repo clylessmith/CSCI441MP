@@ -3,7 +3,8 @@ project(MP)
 set(CMAKE_CXX_STANDARD 17)
 set(SOURCE_FILES main.cpp MPEngine.cpp MPEngine.h Bardo.cpp Bardo.h
         ArcballCam.h
-        ArcballCam.cpp)
+        ArcballCam.cpp
+        Peanut.cpp)
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 # Windows with MinGW Installations

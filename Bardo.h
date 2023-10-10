@@ -24,9 +24,9 @@ public:
     void drawBardo(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx, float idleTrans, float orbAngle, float orbHover );
 
     /// \desc moves bardo forward
-    void moveForward(GLfloat theta);
+    void moveForward(GLfloat theta, GLfloat worldSize, glm::vec2 moveSpeed);
     /// \desc moves bardo forward
-    void moveBackward(GLfloat theta);
+    void moveBackward(GLfloat theta, GLfloat worldSize, glm::vec2 moveSpeed);
 
     void rotate(GLfloat theta);
 

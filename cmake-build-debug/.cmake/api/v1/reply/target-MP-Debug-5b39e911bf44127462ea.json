@@ -2,10 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "MP.exe"
-		},
-		{
-			"path" : "MP.pdb"
+			"path" : "MP"
 		}
 	],
 	"backtrace" : 1,
@@ -36,19 +33,19 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 16,
+				"line" : 23,
 				"parent" : 0
 			},
 			{
 				"command" : 2,
 				"file" : 0,
-				"line" : 17,
+				"line" : 24,
 				"parent" : 0
 			},
 			{
 				"command" : 3,
 				"file" : 0,
-				"line" : 14,
+				"line" : 21,
 				"parent" : 0
 			}
 		]
@@ -59,14 +56,14 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g -std=gnu++17 -fdiagnostics-color=always"
+					"fragment" : "-g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics"
 				}
 			],
 			"includes" : 
 			[
 				{
 					"backtrace" : 4,
-					"path" : "C:/Users/swilliams/Documents/code/csci441/include"
+					"path" : "/usr/local/include"
 				}
 			],
 			"language" : "CXX",
@@ -103,12 +100,31 @@
 			},
 			{
 				"backtrace" : 2,
-				"fragment" : "-LC:\\Users\\swilliams\\Documents\\code\\csci441\\lib",
+				"fragment" : "-L/usr/local/lib",
 				"role" : "libraryPath"
 			},
 			{
+				"fragment" : "-Wl,-rpath,/usr/local/lib",
+				"role" : "libraries"
+			},
+			{
 				"backtrace" : 3,
-				"fragment" : "-lopengl32",
+				"fragment" : "-framework OpenGL",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-framework Cocoa",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-framework IOKit",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-framework CoreVideo",
 				"role" : "libraries"
 			},
 			{
@@ -118,23 +134,14 @@
 			},
 			{
 				"backtrace" : 3,
-				"fragment" : "-lglew32",
-				"role" : "libraries"
-			},
-			{
-				"backtrace" : 3,
-				"fragment" : "-lgdi32",
-				"role" : "libraries"
-			},
-			{
-				"fragment" : "-lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32",
+				"fragment" : "-lglew",
 				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
 	},
 	"name" : "MP",
-	"nameOnDisk" : "MP.exe",
+	"nameOnDisk" : "MP",
 	"paths" : 
 	{
 		"build" : ".",

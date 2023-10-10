@@ -76,18 +76,43 @@ void Bardo::drawBardo(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx, 
     _drawStaff(modelMtx, viewMtx, projMtx, idleTrans * 0.5, orbAngle, orbHover);   // Bardo's magic staff
 }
 
-void Bardo::moveForward(GLfloat thetaIn) {
+void Bardo::moveForward(GLfloat thetaIn, GLfloat worldSize, glm::vec2 moveSpeed) {
     if(_bardoAngle > _2PI ) _bardoAngle -= _2PI;
-    _bardoAngle = thetaIn;
+    _bardoAngle += thetaIn;
+    float xMove = coords[0] + glm::cos(_bardoAngle) * moveSpeed.x;
+    float zMove = coords[2] - glm::sin(_bardoAngle) * moveSpeed.x;
+
+    if (xMove <= -worldSize || xMove >= worldSize) {
+        xMove = coords[0];
+    }
+    if (zMove <= -worldSize || zMove >= worldSize) {
+        zMove = coords[2];
+    }
+    coords = glm::vec3(xMove,
+                            coords[1],
+                            zMove);
 }
 
-void Bardo::moveBackward(GLfloat thetaIn) {
+void Bardo::moveBackward(GLfloat thetaIn, GLfloat worldSize, glm::vec2 moveSpeed) {
     if(_bardoAngle < 0.0f ) _bardoAngle += _2PI;
-    _bardoAngle = thetaIn;
+    _bardoAngle += thetaIn;
+
+    float xMove = coords[0] - glm::cos(_bardoAngle) * moveSpeed.x;
+    float zMove = coords[2] + glm::sin(_bardoAngle) * moveSpeed.x;
+
+    if (xMove <= -worldSize || xMove >= worldSize) {
+        xMove = coords[0];
+    }
+    if (zMove <= -worldSize || zMove >= worldSize) {
+        zMove = coords[2];
+    }
+    coords = glm::vec3(xMove,
+                            coords[1],
+                            zMove);
 }
 
 void Bardo::rotate(GLfloat thetaIn) {
-    _bardoAngle = thetaIn;
+    _bardoAngle += thetaIn;
 }
 
 void Bardo::_drawBardoBody(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx ) const {
