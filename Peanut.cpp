@@ -48,16 +48,36 @@ void Peanut::recomputeOrientation() {
     _charDirection = glm::normalize(_charDirection );
 }
 
-void Peanut::moveForward(const GLfloat movementFactor) {
+void Peanut::moveForward() {
     _charPosition += _charDirection * 0.1f;
-    _legAngle += _PI / 8.0f;
-    if( _legAngle > _2PI ) _legAngle -= _2PI;
+    if (_legAngle > _PI / 2.0f) {
+        _legAngle = -_PI / 16.0f;
+    }
+    else if (_legAngle < -_PI / 2.0f) {
+        _legAngle = _PI / 16.0f;
+    }
+    if (_legAngle > 0.0f) {
+        _legAngle += _PI / 16.0f;
+    }
+    else {
+        _legAngle -= _PI / 16.0f;
+    }
 }
 
-void Peanut::moveBackward(const GLfloat movementFactor) {
+void Peanut::moveBackward() {
     _charPosition -= _charDirection * 0.1f;
-    _legAngle -= _PI / 8.0f;
-    if( _legAngle < 0.0f ) _legAngle += _2PI;
+    if (_legAngle > _PI / 2.0f) {
+        _legAngle = -_PI / 16.0f;
+    }
+    else if (_legAngle < -_PI / 2.0f) {
+        _legAngle = _PI / 16.0f;
+    }
+    if (_legAngle > 0.0f) {
+        _legAngle += _PI / 16.0f;
+    }
+    else {
+        _legAngle -= _PI / 16.0f;
+    }
 }
 
 void Peanut::rotate(const GLfloat theta) {
