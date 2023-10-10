@@ -156,6 +156,11 @@ void MPEngine::mSetupBuffers() {
                        _lightingShaderUniformLocations.normalMatrix,
                        _lightingShaderUniformLocations.materialColor);
 
+    _peanut = new Peanut(_lightingShaderProgram->getShaderProgramHandle(),
+                         _lightingShaderUniformLocations.mvpMatrix,
+                         _lightingShaderUniformLocations.normalMatrix,
+                         _lightingShaderUniformLocations.materialColor);
+
     _createGroundBuffers();
     _generateEnvironment();
 }
@@ -342,6 +347,7 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
     modelMtx = glm::rotate(modelMtx, _bardoTheta, CSCI441::Y_AXIS );
     // draw our plane now
     _bardo->drawBardo(modelMtx, viewMtx, projMtx, _idleTrans, _orbAngle, _orbHover);
+    _peanut->drawPeanut(glm::mat4(1.0f), viewMtx, projMtx);
     //// END DRAWING BARDO ////
 
 }

@@ -1,8 +1,8 @@
 #include "Peanut.h"
 
-#include "include/glm/gtc/matrix_transform.hpp"
+#include <glm/gtc/matrix_transform.hpp>
 
-#include "include/CSCI441/objects.hpp"
+#include <CSCI441/objects.hpp>
 #include <CSCI441/OpenGLUtils.hpp>
 
 Peanut::Peanut( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint normalMtxUniformLocation, GLint materialColorUniformLocation ) {
@@ -28,8 +28,7 @@ Peanut::Peanut( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint n
 }
 
 void Peanut::drawPeanut( glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx ) {
-    modelMtx = glm::rotate( modelMtx, -_PI / 2.0f, CSCI441::Y_AXIS );
-    modelMtx = glm::rotate( modelMtx, _PI / 2.0f, CSCI441::Z_AXIS );
+    modelMtx = glm::scale(modelMtx, glm::vec3(30.0f,30.0f, 30.0f));
     _drawTorso(modelMtx, viewMtx, projMtx);
     _drawArm(true, modelMtx, viewMtx, projMtx);
     _drawArm(false, modelMtx, viewMtx, projMtx);

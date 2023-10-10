@@ -34,7 +34,7 @@ public:
 private:
 
     glm::vec3 _charDirection = {0.0f,0.0f,-1.0f};
-    glm::vec3 _charPosition;
+    glm::vec3 _charPosition = {0.0f,0.f,0.0f};
     GLfloat _charTheta = 0.0f;
 
     /// \desc handle of the shader program to use when drawing the plane
