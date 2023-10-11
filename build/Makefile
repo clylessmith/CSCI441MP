@@ -177,6 +177,30 @@ Bardo.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/MP.dir/build.make CMakeFiles/MP.dir/Bardo.cpp.s
 .PHONY : Bardo.cpp.s
 
+Dorock.o: Dorock.cpp.o
+.PHONY : Dorock.o
+
+# target to build an object file
+Dorock.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MP.dir/build.make CMakeFiles/MP.dir/Dorock.cpp.o
+.PHONY : Dorock.cpp.o
+
+Dorock.i: Dorock.cpp.i
+.PHONY : Dorock.i
+
+# target to preprocess a source file
+Dorock.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MP.dir/build.make CMakeFiles/MP.dir/Dorock.cpp.i
+.PHONY : Dorock.cpp.i
+
+Dorock.s: Dorock.cpp.s
+.PHONY : Dorock.s
+
+# target to generate assembly for a file
+Dorock.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/MP.dir/build.make CMakeFiles/MP.dir/Dorock.cpp.s
+.PHONY : Dorock.cpp.s
+
 MPEngine.o: MPEngine.cpp.o
 .PHONY : MPEngine.o
 
@@ -264,6 +288,9 @@ help:
 	@echo "... Bardo.o"
 	@echo "... Bardo.i"
 	@echo "... Bardo.s"
+	@echo "... Dorock.o"
+	@echo "... Dorock.i"
+	@echo "... Dorock.s"
 	@echo "... MPEngine.o"
 	@echo "... MPEngine.i"
 	@echo "... MPEngine.s"

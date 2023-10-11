@@ -8,6 +8,7 @@
 #include "Bardo.h"
 #include "Peanut.h"
 #include "ArcballCam.h"
+#include "Dorock.h"
 
 #include <vector>
 
@@ -77,6 +78,9 @@ private:
 
     /// \desc peanut hero model
     Peanut* _peanut;
+
+    /// \desc peanut hero model
+    Dorock* _dorock;
 
     /// \desc Bardo's location in the world
     glm::vec3 _heroCoords;

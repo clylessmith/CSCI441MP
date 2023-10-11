@@ -354,5 +354,6 @@ CMakeFiles/MP.dir/MPEngine.cpp.o: \
  /home/charlesmowbray/Documents/CSCI441/midtermProject/groupProject/CSCI441MP/Peanut.h \
  /home/charlesmowbray/Documents/CSCI441/midtermProject/groupProject/CSCI441MP/ArcballCam.h \
  /usr/local/include/CSCI441/Camera.hpp \
+ /home/charlesmowbray/Documents/CSCI441/midtermProject/groupProject/CSCI441MP/Dorock.h \
  /usr/local/include/CSCI441/objects.hpp \
  /usr/local/include/CSCI441/teapot.hpp /usr/include/c++/13/iostream

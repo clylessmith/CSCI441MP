@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/MP.dir/ArcballCam.cpp.o.d"
   "CMakeFiles/MP.dir/Bardo.cpp.o"
   "CMakeFiles/MP.dir/Bardo.cpp.o.d"
+  "CMakeFiles/MP.dir/Dorock.cpp.o"
+  "CMakeFiles/MP.dir/Dorock.cpp.o.d"
   "CMakeFiles/MP.dir/MPEngine.cpp.o"
   "CMakeFiles/MP.dir/MPEngine.cpp.o.d"
   "CMakeFiles/MP.dir/Peanut.cpp.o"
