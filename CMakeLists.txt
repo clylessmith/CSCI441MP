@@ -31,5 +31,5 @@ elseif( UNIX AND ${CMAKE_SYSTEM_NAME} MATCHES "Linux" )
     include_directories("/usr/local/include")
     # update the lib directory location
     target_link_directories(${PROJECT_NAME} PUBLIC "/usr/local/lib")
-    target_link_libraries(${PROJECT_NAME} GL glfw3 GLEW X11 md5model)
+    target_link_libraries(${PROJECT_NAME} GL glfw3 GLEW X11)
 endif()
