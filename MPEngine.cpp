@@ -418,7 +418,7 @@ void MPEngine::_updateScene() {
 
     // turn hero right
     if( _keys[GLFW_KEY_D] ) {
-        _heroTheta -= _cameraSpeed.y;
+        _heroTheta = -_cameraSpeed.y;
 
         switch (_currentHero) {
             case 1:
@@ -439,7 +439,7 @@ void MPEngine::_updateScene() {
     }
     // turn hero left
     if( _keys[GLFW_KEY_A] ) {
-        _heroTheta += _cameraSpeed.y;
+        _heroTheta = _cameraSpeed.y;
 
         switch (_currentHero) {
             case 1:

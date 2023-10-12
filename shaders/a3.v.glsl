@@ -42,7 +42,7 @@ void main() {
     // perform diffuse calculation
     vec3 iDiffuse = 0.3 * (materialColor * lightColor * max(dot(lightVector,  vNormalNew),0));
 
-    vec3 reflectance = 0*  0.3 * (-pointLightDirection + 2 * (max(dot(vNormalNew, pointLightDirection),0)) * vNormalNew);
+    vec3 reflectance = 0 *  0.3 * (-pointLightDirection + 2 * (max(dot(vNormalNew, pointLightDirection),0)) * vNormalNew);
     vec3 ambient = 0.1 * lightColor * materialColor;
 
 
