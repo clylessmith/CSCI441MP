@@ -378,6 +378,9 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
 
 void MPEngine::_updateScene() {
 
+    //animation for dorock
+    _dorock->baseRotation += 0.1;
+
     // animation for Bardo
     if (_framesPassedOrb == 4) {
         _framesPassedOrb = 0;
@@ -455,9 +458,10 @@ void MPEngine::_updateScene() {
             case 2:
                 _peanut->moveForward();
                 _heroCoords = _peanut->getPosition();
+                break;
             case 3:
                 _dorock->moveForward(WORLD_SIZE);
-                _heroCoords = glm::vec3(_dorock->dorockX, 1, _dorock->dorockZ);
+                _heroCoords = glm::vec3(_dorock->dorockX, 8, _dorock->dorockZ);
             default:
                 break;
         }
@@ -486,7 +490,7 @@ void MPEngine::_updateScene() {
                 break;
             case 3:
                 _dorock->moveBackward(WORLD_SIZE);
-                _heroCoords = glm::vec3(_dorock->dorockX, 1, _dorock->dorockZ);
+                _heroCoords = glm::vec3(_dorock->dorockX, 8, _dorock->dorockZ);
                 break;
             default:
                 break;
@@ -530,18 +534,24 @@ void MPEngine::_updateScene() {
         _currentCamera = 4;
         _heroCoords = _bardo->coords;
         _heroTheta = _bardo->_bardoAngle;
+        _pArcballCam->setLookAtPoint(_heroCoords);
+        _pArcballCam->recomputeOrientation();
     }
     if (_keys[GLFW_KEY_2]) {
         _currentHero = 2;
         _currentCamera = 4;
         _heroCoords = _peanut->getPosition();
         _heroTheta = _peanut->getTheta();
+        _pArcballCam->setLookAtPoint(_heroCoords);
+        _pArcballCam->recomputeOrientation();
     }
     if (_keys[GLFW_KEY_3]) {
         _currentHero = 3;
         _currentCamera = 4;
-        _heroCoords = glm::vec3(_dorock->dorockX, 1, _dorock->dorockZ);
+        _heroCoords = glm::vec3(_dorock->dorockX, 8, _dorock->dorockZ);
         _heroTheta = _dorock->_dorockAngle;
+        _pArcballCam->setLookAtPoint(_heroCoords);
+        _pArcballCam->recomputeOrientation();
     }
     if (_keys[GLFW_KEY_4]) {
         _currentCamera = 4;
@@ -552,6 +562,7 @@ void MPEngine::_updateScene() {
     if (_keys[GLFW_KEY_6]) {
         _currentCamera = 6;
     }
+
 
 }
 
