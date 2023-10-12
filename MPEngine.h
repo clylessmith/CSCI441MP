@@ -109,6 +109,7 @@ private:
 
     int _currentHero;
     int _currentCamera;
+    bool _firstPerson;
 
     /// \desc generates building information to make up our scene
     void _generateEnvironment();

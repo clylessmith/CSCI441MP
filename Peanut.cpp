@@ -81,7 +81,7 @@ void Peanut::moveBackward() {
 }
 
 void Peanut::rotate(const GLfloat theta) {
-    _charTheta += theta;
+    _charTheta = theta;
     recomputeOrientation();
 }
 

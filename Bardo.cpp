@@ -113,7 +113,7 @@ void Bardo::moveBackward(GLfloat thetaIn, GLfloat worldSize, glm::vec2 moveSpeed
 }
 
 void Bardo::rotate(GLfloat thetaIn) {
-    _bardoAngle += thetaIn;
+    _bardoAngle = thetaIn;
 }
 
 void Bardo::_drawBardoBody(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx ) const {

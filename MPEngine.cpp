@@ -35,6 +35,7 @@ MPEngine::MPEngine()
     _orbHover = 0.01;
     _currentHero = 1;
     _currentCamera = 4;
+    _firstPerson = false;
 }
 
 MPEngine::~MPEngine() {
@@ -233,7 +234,7 @@ void MPEngine::_generateEnvironment() {
     for(int i = LEFT_END_POINT; i < RIGHT_END_POINT; i += GRID_SPACING_WIDTH) {
         for(int j = BOTTOM_END_POINT; j < TOP_END_POINT; j += GRID_SPACING_LENGTH) {
             // don't just draw a building ANYWHERE.
-            if( i % 2 && j % 2 && getRand() < 0.005f ) {
+            if( i % 2 && j % 2 && getRand() < 0.0025f ) {
                 // translate to spot
                 glm::mat4 transToSpotMtx = glm::translate( glm::mat4(1.0), glm::vec3(i, 0.0f, j) );
 
@@ -402,7 +403,7 @@ void MPEngine::_updateScene() {
 
     // turn hero right
     if( _keys[GLFW_KEY_D] ) {
-        _heroTheta = -_cameraSpeed.y;
+        _heroTheta -= _cameraSpeed.y;
 
         switch (_currentHero) {
             case 1:
@@ -423,7 +424,7 @@ void MPEngine::_updateScene() {
     }
     // turn hero left
     if( _keys[GLFW_KEY_A] ) {
-        _heroTheta = _cameraSpeed.y;
+        _heroTheta += _cameraSpeed.y;
 
         switch (_currentHero) {
             case 1:
@@ -560,7 +561,7 @@ void MPEngine::_updateScene() {
         _currentCamera = 5;
     }
     if (_keys[GLFW_KEY_6]) {
-        _currentCamera = 6;
+        _firstPerson = true;
     }
 
 
@@ -591,7 +592,12 @@ void MPEngine::run() {
             case 5:
                 _renderScene(_pFreeCam->getViewMatrix(), _pFreeCam->getProjectionMatrix());
                 break;
+        }
+        std::cout << _firstPerson << std::endl;
+        if (_firstPerson) {
 
+            glViewport(0, 0, framebufferWidth / 4, framebufferHeight / 4);
+            _renderScene(_pArcballCam->getViewMatrix(), _pArcballCam->getProjectionMatrix());
         }
         _updateScene();
 
@@ -624,7 +630,7 @@ void MPEngine::_drawTree(MPEngine::BuildingData building, glm::mat4 viewMtx, glm
     CSCI441::drawSolidCube(1.0);
 
     glm::mat4 modelMtx1 = modelMtx1 = glm::translate(modelMtx1, glm::vec3(0, building.treeHeight * 0.005, 0));;
-    modelMtx1 = glm::scale(building.modelMatrix, glm::vec3(4.0f, building.treeHeight * 0.4, 4.0f));
+    modelMtx1 = glm::scale(building.modelMatrix, glm::vec3(4.0f, building.treeHeight * 0.3, 4.0f));
 
 
     glm::vec3 leafColor = glm::vec3(0.02f, 0.22f, 0.02f);
@@ -633,7 +639,9 @@ void MPEngine::_drawTree(MPEngine::BuildingData building, glm::mat4 viewMtx, glm
 
     _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.materialColor, leafColor);
 
-    CSCI441::drawSolidCone( 2.5f, 0.2f, 16, 16 );
+    CSCI441::drawSolidCone( 2.25f, 0.2f, 16, 16 );
+
+
 }
 
 //*************************************************************************************
