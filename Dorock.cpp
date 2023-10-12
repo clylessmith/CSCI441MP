@@ -86,8 +86,8 @@ void Dorock::drawFace(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx )
     // CSCI441::drawSolidTorus(2.0, 4.0, 16, 16);
     CSCI441::drawSolidSphere(3.0, 16.0, 16.0);
 
-    modelMtx = glm::translate( glm::mat4(1.0), glm::vec3(1.0, 13, 1) );
-    modelMtx = glm::scale( glm::mat4(1.0), glm::vec3(0.1f, 0.1f, 0.1f) );
+    modelMtx = glm::translate( modelMtx, glm::vec3(1.0, 13, 1) );
+    modelMtx = glm::scale( modelMtx, glm::vec3(0.1f, 0.1f, 0.1f) );
 
     // glm::mat4 baseModelmtx2 =  moveMtx * rotMtx  * tranMtx3 * scaleMtx3;
 

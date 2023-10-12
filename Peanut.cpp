@@ -85,7 +85,6 @@ void Peanut::rotate(const GLfloat theta) {
     recomputeOrientation();
 }
 
-
 void Peanut::_drawHead(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx ) const {
     modelMtx = glm::translate(modelMtx, glm::vec3(0.0f,0.34f,0.0f));
     modelMtx = glm::scale( modelMtx, _scaleHead );

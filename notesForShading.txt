@@ -1,0 +1,2 @@
+its gourad if everything is implemented
+in the vertex shader.

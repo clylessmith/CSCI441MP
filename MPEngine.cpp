@@ -181,10 +181,10 @@ void MPEngine::_createGroundBuffers() {
 
     // add normal data
     Vertex groundQuad[4] = {
-            {-1.0f, 0.0f, -1.0f},
-            { 1.0f, 0.0f, -1.0f},
-            {-1.0f, 0.0f,  1.0f},
-            { 1.0f, 0.0f,  1.0f}
+            {-1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f},
+            { 1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f},
+            {-1.0f, 0.0f,  1.0f, 0.0f, 1.0f, 0.0f},
+            { 1.0f, 0.0f,  1.0f, 0.0f, 1.0f, 0.0f}
     };
 
     GLushort indices[4] = {0,1,2,3};
@@ -200,11 +200,11 @@ void MPEngine::_createGroundBuffers() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(groundQuad), groundQuad, GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(_lightingShaderAttributeLocations.vPos);
-    glVertexAttribPointer(_lightingShaderAttributeLocations.vPos, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)nullptr);
+    glVertexAttribPointer(_lightingShaderAttributeLocations.vPos, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
     // hook up vertex normal attribute
     glEnableVertexAttribArray(_lightingShaderAttributeLocations.vertexNormal);
-    glVertexAttribPointer(_lightingShaderAttributeLocations.vertexNormal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *) nullptr);
+    glVertexAttribPointer(_lightingShaderAttributeLocations.vertexNormal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 3));
 
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbods[1]);
@@ -279,7 +279,7 @@ void MPEngine::mSetupScene() {
 
     // set lighting uniforms
     glm::vec3 lightDirection = glm::vec3(-1,-1,-1);
-    glm::vec3 lightColor = glm::vec3(1,1,1);
+    glm::vec3 lightColor = glm::vec3(1.0f,1.0f,1.0f);
 
     glProgramUniform3fv(
             _lightingShaderProgram->getShaderProgramHandle(),
@@ -374,7 +374,6 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
 
     ////END DRAWING DOROCK////
 
-
 }
 
 void MPEngine::_updateScene() {
@@ -465,7 +464,6 @@ void MPEngine::_updateScene() {
 
         _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
-
     }
 
     // move hero backward
@@ -603,6 +601,7 @@ void MPEngine::_computeAndSendMatrixUniforms(glm::mat4 modelMtx, glm::mat4 viewM
 
     // compute and send the normal matrix
     glm::mat3 normalMtx = glm::mat3(glm::transpose(glm::inverse(modelMtx)));
+    _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.normalMatrix, normalMtx);
 
 }
 
@@ -624,8 +623,6 @@ void MPEngine::_drawTree(MPEngine::BuildingData building, glm::mat4 viewMtx, glm
     _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.materialColor, leafColor);
 
     CSCI441::drawSolidCone( 2.5f, 0.2f, 16, 16 );
-
-
 }
 
 //*************************************************************************************
