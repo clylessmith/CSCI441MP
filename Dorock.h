@@ -39,13 +39,14 @@ public:
     GLfloat _dorockAngle = 0.0f;
     GLint dorockX;
     GLint dorockZ;
+    GLfloat baseRotation = 0.0f;
+
 
 private:
 
     GLfloat heroOrientation;
     GLfloat dorockTurnAngle;
 
-    GLfloat baseRotation;
 
     GLfloat _rotatePlaneAngle;
 

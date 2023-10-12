@@ -37,8 +37,6 @@ void Dorock::drawHead(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx )
     modelMtx = glm::translate( modelMtx, glm::vec3(0, 10, 0) );
     modelMtx = glm::scale( modelMtx, glm::vec3(0.5f, 2.0f, 0.5f) );
 
-    // glm::mat4 TorModelMatrix =   moveMtx * tranMtx * rotMtx  * scaleMtx;
-
     _computeAndSendMatrixUniforms(modelMtx, viewMtx, projMtx);
 
     glm::vec3 headColor(0.8f, 0.8f, 0.8f);
@@ -53,7 +51,7 @@ void Dorock::drawBase(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx )
     //DRAW BASE OF CHARACTER
     modelMtx = glm::translate( modelMtx, glm::vec3(0, -2, 0) );
     modelMtx = glm::scale( modelMtx, glm::vec3(0.5f, 2.0f, 0.5f) );
-    modelMtx = glm::rotate( modelMtx, _dorockAngle, glm::vec3(0.0f, 0.1f, 0.0f));
+    modelMtx = glm::rotate( modelMtx, baseRotation, glm::vec3(0.0f, 0.1f, 0.0f));
 
     // glm::mat4 baseModelmtx =  moveMtx * tranMtx1 * rotMtx * rotMtx1* scaleMtx1;
 
@@ -75,29 +73,21 @@ void Dorock::drawFace(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx )
     leftEyeModelMtx = glm::translate( leftEyeModelMtx, glm::vec3(0, 13, 1.5) );
     leftEyeModelMtx = glm::scale( leftEyeModelMtx, glm::vec3(0.1f, 0.1f, 0.1f) );
 
-    // glm::mat4 baseModelmtx1 =  moveMtx * rotMtx  * tranMtx2 * scaleMtx2;
-
     _computeAndSendMatrixUniforms(leftEyeModelMtx, viewMtx, projMtx);
 
     glm::vec3 leftEyeColor(0.78f, 0.03f, 0.2f);
-    // _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.materialColor, baseColor1);
     glProgramUniform3fv(_shaderProgramHandle, _shaderProgramUniformLocations.materialColor, 1, &leftEyeColor[0]);
 
-    // CSCI441::drawSolidTorus(2.0, 4.0, 16, 16);
     CSCI441::drawSolidSphere(3.0, 16.0, 16.0);
 
-    modelMtx = glm::translate( glm::mat4(1.0), glm::vec3(1.0, 13, 1) );
-    modelMtx = glm::scale( glm::mat4(1.0), glm::vec3(0.1f, 0.1f, 0.1f) );
-
-    // glm::mat4 baseModelmtx2 =  moveMtx * rotMtx  * tranMtx3 * scaleMtx3;
+    modelMtx = glm::translate( modelMtx, glm::vec3(1.0, 13, 1) );
+    modelMtx = glm::scale( modelMtx, glm::vec3(0.1f, 0.1f, 0.1f) );
 
     _computeAndSendMatrixUniforms(modelMtx, viewMtx, projMtx);
 
     glm::vec3 rightEyeColor(0.78f, 0.03f, 0.2f);
-    // _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.materialColor, baseColor2);
     glProgramUniform3fv(_shaderProgramHandle, _shaderProgramUniformLocations.materialColor, 1, &rightEyeColor[0]);
 
-    // CSCI441::drawSolidTorus(2.0, 4.0, 16, 16);
     CSCI441::drawSolidSphere(3.0, 16.0, 16.0);
 }
 
