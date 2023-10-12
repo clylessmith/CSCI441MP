@@ -161,6 +161,12 @@ void MPEngine::mSetupBuffers() {
                          _lightingShaderUniformLocations.mvpMatrix,
                          _lightingShaderUniformLocations.normalMatrix,
                          _lightingShaderUniformLocations.materialColor);
+    
+    _dorock = new Dorock(_lightingShaderProgram->getShaderProgramHandle(),
+                         _lightingShaderUniformLocations.mvpMatrix,
+                         _lightingShaderUniformLocations.normalMatrix,
+                         _lightingShaderUniformLocations.materialColor);
+
 
     _createGroundBuffers();
     _generateEnvironment();
@@ -358,6 +364,18 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
     _peanut->drawPeanut(modelMtx1, viewMtx, projMtx);
     //// END DRAWING BARDO ////
 
+    ////BEGIN DRAWING DOROCK////
+    glm::mat4 modelMtx2(1.0f);
+
+    modelMtx2 = glm::translate(modelMtx2, glm::vec3(_dorock->dorockX, 1, _dorock->dorockZ) );
+    modelMtx2 = glm::rotate(modelMtx2, _dorock->_dorockAngle, CSCI441::Y_AXIS );
+
+
+    _dorock->drawDorock(modelMtx2, viewMtx, projMtx);
+
+    ////END DRAWING DOROCK////
+
+
 }
 
 void MPEngine::_updateScene() {
@@ -392,6 +410,10 @@ void MPEngine::_updateScene() {
             case 2:
                 _peanut->rotate(_heroTheta);
                 break;
+            case 3:
+               _dorock->rotate(_heroTheta);
+                break;
+            
             default:
                 break;
         }
@@ -408,6 +430,9 @@ void MPEngine::_updateScene() {
                 break;
             case 2:
                 _peanut->rotate(_heroTheta);
+                break;
+            case 3:
+                _dorock->rotate(_heroTheta);
                 break;
             default:
                 break;
@@ -432,6 +457,9 @@ void MPEngine::_updateScene() {
             case 2:
                 _peanut->moveForward();
                 _heroCoords = _peanut->getPosition();
+            case 3:
+                _dorock->moveForward(WORLD_SIZE);
+                _heroCoords = glm::vec3(_dorock->dorockX, 1, _dorock->dorockZ);
             default:
                 break;
         }
@@ -458,6 +486,10 @@ void MPEngine::_updateScene() {
             case 2:
                 _peanut->moveBackward();
                 _heroCoords = _peanut->getPosition();
+                break;
+            case 3:
+                _dorock->moveBackward(WORLD_SIZE);
+                _heroCoords = glm::vec3(_dorock->dorockX, 1, _dorock->dorockZ);
                 break;
             default:
                 break;
@@ -517,6 +549,9 @@ void MPEngine::_updateScene() {
         _currentCamera = 4;
         _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
+        _heroCoords = glm::vec3(_dorock->dorockX, 1, _dorock->dorockZ);
+        _heroTheta = _dorock->_dorockAngle;
+
     }
     if (_keys[GLFW_KEY_4]) {
         _currentCamera = 4;

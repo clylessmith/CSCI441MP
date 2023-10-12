@@ -84,6 +84,13 @@ build CMakeFiles/MP.dir/Peanut.cpp.o: CXX_COMPILER__MP_unscanned_Debug /Users/ca
   OBJECT_DIR = CMakeFiles/MP.dir
   OBJECT_FILE_DIR = CMakeFiles/MP.dir
 
+build CMakeFiles/MP.dir/Dorock.cpp.o: CXX_COMPILER__MP_unscanned_Debug /Users/camdenlyles-smith/Desktop/School/CSCI_441$ /fellowship_of_the_bling_MP/Dorock.cpp || cmake_object_order_depends_target_MP
+  DEP_FILE = CMakeFiles/MP.dir/Dorock.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -fcolor-diagnostics
+  INCLUDES = -I/usr/local/include
+  OBJECT_DIR = CMakeFiles/MP.dir
+  OBJECT_FILE_DIR = CMakeFiles/MP.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target MP
@@ -92,7 +99,7 @@ build CMakeFiles/MP.dir/Peanut.cpp.o: CXX_COMPILER__MP_unscanned_Debug /Users/ca
 #############################################
 # Link the executable MP
 
-build MP: CXX_EXECUTABLE_LINKER__MP_Debug CMakeFiles/MP.dir/main.cpp.o CMakeFiles/MP.dir/MPEngine.cpp.o CMakeFiles/MP.dir/Bardo.cpp.o CMakeFiles/MP.dir/ArcballCam.cpp.o CMakeFiles/MP.dir/Peanut.cpp.o
+build MP: CXX_EXECUTABLE_LINKER__MP_Debug CMakeFiles/MP.dir/main.cpp.o CMakeFiles/MP.dir/MPEngine.cpp.o CMakeFiles/MP.dir/Bardo.cpp.o CMakeFiles/MP.dir/ArcballCam.cpp.o CMakeFiles/MP.dir/Peanut.cpp.o CMakeFiles/MP.dir/Dorock.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
   LINK_LIBRARIES = -Wl,-rpath,/usr/local/lib  -framework OpenGL  -framework Cocoa  -framework IOKit  -framework CoreVideo  -lglfw3  -lglew
   LINK_PATH = -L/usr/local/lib
