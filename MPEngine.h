@@ -120,12 +120,16 @@ private:
     struct LightingShaderUniformLocations {
         /// \desc precomputed MVP matrix location
         GLint mvpMatrix;
+        GLint modelMtx;
+
         /// \desc material diffuse color location
         GLint materialColor;
         // add new uniforms
         GLint lightDirection;
         GLint lightColor;
         GLint normalMatrix;
+        GLint pointLightPos;
+
 
 
     } _lightingShaderUniformLocations;
@@ -135,6 +139,7 @@ private:
         GLint vPos;
         // add new attributes
         GLint vertexNormal;
+
 
     } _lightingShaderAttributeLocations;
 

@@ -136,10 +136,15 @@ void MPEngine::mSetupShaders() {
     _lightingShaderProgram = new CSCI441::ShaderProgram("shaders/a3.v.glsl", "shaders/a3.f.glsl" );
     _lightingShaderUniformLocations.mvpMatrix      = _lightingShaderProgram->getUniformLocation("mvpMatrix");
     _lightingShaderUniformLocations.materialColor  = _lightingShaderProgram->getUniformLocation("materialColor");
+
+    _lightingShaderUniformLocations.modelMtx      = _lightingShaderProgram->getUniformLocation("modelMtx");
+
     // assign uniforms
     _lightingShaderUniformLocations.lightColor = _lightingShaderProgram->getUniformLocation("lightColor");
     _lightingShaderUniformLocations.lightDirection = _lightingShaderProgram->getUniformLocation("lightDirection");
     _lightingShaderUniformLocations.normalMatrix = _lightingShaderProgram->getUniformLocation("normalMatrix");
+    _lightingShaderUniformLocations.pointLightPos = _lightingShaderProgram->getUniformLocation("pointLightPos");
+
 
     _lightingShaderAttributeLocations.vPos         = _lightingShaderProgram->getAttributeLocation("vPos");
     // assign attributes
@@ -282,6 +287,9 @@ void MPEngine::mSetupScene() {
     glm::vec3 lightDirection = glm::vec3(-1,-1,-1);
     glm::vec3 lightColor = glm::vec3(1.0f,1.0f,1.0f);
 
+    glm::vec3 pointLightPos = glm::vec3(0.0f,0.0f,0.0f);
+
+
     glProgramUniform3fv(
             _lightingShaderProgram->getShaderProgramHandle(),
             _lightingShaderUniformLocations.lightDirection,
@@ -295,6 +303,13 @@ void MPEngine::mSetupScene() {
             1,
             &lightColor[0]
     );
+
+    glProgramUniform3fv(
+            _lightingShaderProgram->getShaderProgramHandle(),
+            _lightingShaderUniformLocations.pointLightPos,
+            1,
+            &pointLightPos[0]
+            );
 
 }
 
@@ -593,7 +608,6 @@ void MPEngine::run() {
                 _renderScene(_pFreeCam->getViewMatrix(), _pFreeCam->getProjectionMatrix());
                 break;
         }
-        std::cout << _firstPerson << std::endl;
         if (_firstPerson) {
 
             glViewport(0, 0, framebufferWidth / 4, framebufferHeight / 4);
@@ -615,6 +629,7 @@ void MPEngine::_computeAndSendMatrixUniforms(glm::mat4 modelMtx, glm::mat4 viewM
     glm::mat4 mvpMtx = projMtx * viewMtx * modelMtx;
     // then send it to the shader on the GPU to apply to every vertex
     _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.mvpMatrix, mvpMtx);
+    _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.modelMtx, modelMtx);
 
     // compute and send the normal matrix
     glm::mat3 normalMtx = glm::mat3(glm::transpose(glm::inverse(modelMtx)));
