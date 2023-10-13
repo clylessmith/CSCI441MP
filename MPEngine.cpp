@@ -151,6 +151,10 @@ void MPEngine::mSetupShaders() {
     _lightingShaderUniformLocations.normalMatrix = _lightingShaderProgram->getUniformLocation("normalMatrix");
     _lightingShaderUniformLocations.pointLightPos = _lightingShaderProgram->getUniformLocation("pointLightPos");
 
+    // assign uniforms for spot light
+    _lightingShaderUniformLocations.spotLightPos = _lightingShaderProgram->getUniformLocation("spotLightPos");
+    _lightingShaderUniformLocations.spotLightLookatPoint = _lightingShaderProgram->getUniformLocation("spotLightLookatPoint");
+
 
     _lightingShaderAttributeLocations.vPos         = _lightingShaderProgram->getAttributeLocation("vPos");
     // assign attributes
@@ -304,13 +308,27 @@ void MPEngine::mSetupScene() {
 
     glm::vec3 pointLightPos = glm::vec3(0.0f,30.0f,0.0f);
 
-    // glProgramUniform3fv(
-    //         _lightingShaderProgram->getShaderProgramHandle(),
-    //         _lightingShaderUniformLocations.currentLight,
-    //         1,
-    //         &_currentLigh[0]
-    //         );
+    glm::vec3 spotLightPos = glm::vec3(0.0f, 50.0f, 0.0 );
 
+    glm::vec3 spotLightLookatPoint = glm::vec3(0.0f, 0.0f, 0.0 );
+
+    //Load uniforms for spot light
+    glProgramUniform3fv(
+            _lightingShaderProgram->getShaderProgramHandle(),
+            _lightingShaderUniformLocations.spotLightPos,
+            1,
+            &spotLightPos[0]
+            );
+
+    glProgramUniform3fv(
+            _lightingShaderProgram->getShaderProgramHandle(),
+            _lightingShaderUniformLocations.spotLightLookatPoint,
+            1,
+            &spotLightLookatPoint[0]
+            );
+
+
+    // load uniforms for directional light and color
     glProgramUniform3fv(
             _lightingShaderProgram->getShaderProgramHandle(),
             _lightingShaderUniformLocations.lightDirection,
@@ -325,6 +343,7 @@ void MPEngine::mSetupScene() {
             &lightColor[0]
     );
 
+    //load uniforms for point light 
     glProgramUniform3fv(
             _lightingShaderProgram->getShaderProgramHandle(),
             _lightingShaderUniformLocations.pointLightPos,
@@ -366,8 +385,14 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
     _lightingShaderProgram->useProgram();
 
     //send camera position to get view direction
-    _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.cameraPosition, _pArcballCam->getPosition());
+
+    if(_currentCamera == 4){
+        _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.cameraPosition, _pArcballCam->getPosition());
+    }else if (_currentCamera == 5){
+    _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.cameraPosition, _pFreeCam->getPosition());
+    }
     _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.currentLight, _currentLight);
+
 
 
     //// BEGIN DRAWING THE GROUND PLANE ////
@@ -412,7 +437,6 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
 
     modelMtx2 = glm::translate(modelMtx2, glm::vec3(_dorock->dorockX, 1, _dorock->dorockZ) );
     modelMtx2 = glm::rotate(modelMtx2, _dorock->_dorockAngle, CSCI441::Y_AXIS );
-
 
     _dorock->drawDorock(modelMtx2, viewMtx, projMtx);
 
@@ -621,6 +645,9 @@ void MPEngine::_updateScene() {
     }
     if (_keys[GLFW_KEY_8]) {
         _currentLight = 8;
+    }
+   if (_keys[GLFW_KEY_9]) {
+        _currentLight = 9;
     }
     // if (_keys[GLFW_KEY_9]) {
         
