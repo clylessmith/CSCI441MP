@@ -22,6 +22,7 @@ void ArcballCam::recomputeOrientation() {
     mCameraDirection.x = glm::sin(mCameraTheta) * glm::sin(mCameraPhi) * mCameraRadius;
     mCameraDirection.y = -glm::cos(mCameraPhi) * mCameraRadius;
     mCameraDirection.z = -glm::cos(mCameraTheta) * glm::sin(mCameraPhi) * mCameraRadius;
+    
 
     _updateArcballCameraViewMatrix();
 }

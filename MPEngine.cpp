@@ -35,6 +35,7 @@ MPEngine::MPEngine()
     _orbHover = 0.01;
     _currentHero = 1;
     _currentCamera = 4;
+    _currentLight = 7;
     _firstPerson = false;
 }
 
@@ -136,10 +137,19 @@ void MPEngine::mSetupShaders() {
     _lightingShaderProgram = new CSCI441::ShaderProgram("shaders/a3.v.glsl", "shaders/a3.f.glsl" );
     _lightingShaderUniformLocations.mvpMatrix      = _lightingShaderProgram->getUniformLocation("mvpMatrix");
     _lightingShaderUniformLocations.materialColor  = _lightingShaderProgram->getUniformLocation("materialColor");
+
+    _lightingShaderUniformLocations.modelMtx      = _lightingShaderProgram->getUniformLocation("modelMtx");
+
+    _lightingShaderUniformLocations.cameraPosition  = _lightingShaderProgram->getUniformLocation("cameraPosition");
+    _lightingShaderUniformLocations.currentLight  = _lightingShaderProgram->getUniformLocation("currentLight");
+
+
     // assign uniforms
     _lightingShaderUniformLocations.lightColor = _lightingShaderProgram->getUniformLocation("lightColor");
     _lightingShaderUniformLocations.lightDirection = _lightingShaderProgram->getUniformLocation("lightDirection");
     _lightingShaderUniformLocations.normalMatrix = _lightingShaderProgram->getUniformLocation("normalMatrix");
+    _lightingShaderUniformLocations.pointLightPos = _lightingShaderProgram->getUniformLocation("pointLightPos");
+
 
     _lightingShaderAttributeLocations.vPos         = _lightingShaderProgram->getAttributeLocation("vPos");
     // assign attributes
@@ -280,7 +290,16 @@ void MPEngine::mSetupScene() {
 
     // set lighting uniforms
     glm::vec3 lightDirection = glm::vec3(-1,-1,-1);
-    glm::vec3 lightColor = glm::vec3(1.0f,1.0f,1.0f);
+    glm::vec3 lightColor = glm::vec3(0.8f,0.8f,0.8f);
+
+    glm::vec3 pointLightPos = glm::vec3(0.0f,30.0f,0.0f);
+
+    // glProgramUniform3fv(
+    //         _lightingShaderProgram->getShaderProgramHandle(),
+    //         _lightingShaderUniformLocations.currentLight,
+    //         1,
+    //         &_currentLigh[0]
+    //         );
 
     glProgramUniform3fv(
             _lightingShaderProgram->getShaderProgramHandle(),
@@ -295,6 +314,13 @@ void MPEngine::mSetupScene() {
             1,
             &lightColor[0]
     );
+
+    glProgramUniform3fv(
+            _lightingShaderProgram->getShaderProgramHandle(),
+            _lightingShaderUniformLocations.pointLightPos,
+            1,
+            &pointLightPos[0]
+            );
 
 }
 
@@ -326,6 +352,11 @@ void MPEngine::mCleanupBuffers() {
 void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
     // use our lighting shader program
     _lightingShaderProgram->useProgram();
+
+    //send camera position to get view direction
+    _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.cameraPosition, _pArcballCam->getPosition());
+    _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.currentLight, _currentLight);
+
 
     //// BEGIN DRAWING THE GROUND PLANE ////
     // draw the ground plane
@@ -403,7 +434,7 @@ void MPEngine::_updateScene() {
 
     // turn hero right
     if( _keys[GLFW_KEY_D] ) {
-        _heroTheta -= _cameraSpeed.y;
+        _heroTheta = -_cameraSpeed.y;
 
         switch (_currentHero) {
             case 1:
@@ -424,7 +455,7 @@ void MPEngine::_updateScene() {
     }
     // turn hero left
     if( _keys[GLFW_KEY_A] ) {
-        _heroTheta += _cameraSpeed.y;
+        _heroTheta = _cameraSpeed.y;
 
         switch (_currentHero) {
             case 1:
@@ -563,6 +594,15 @@ void MPEngine::_updateScene() {
     if (_keys[GLFW_KEY_6]) {
         _firstPerson = true;
     }
+    if (_keys[GLFW_KEY_7]) {
+        _currentLight = 7;
+    }
+    if (_keys[GLFW_KEY_8]) {
+        _currentLight = 8;
+    }
+    // if (_keys[GLFW_KEY_9]) {
+        
+    // }
 
 
 }
@@ -588,12 +628,15 @@ void MPEngine::run() {
         switch (_currentCamera) {
             case 4:
                 _renderScene(_pArcballCam->getViewMatrix(), _pArcballCam->getProjectionMatrix());
+                //send camera position to get view direction
+                _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.cameraPosition, _pArcballCam->getPosition());
                 break;
             case 5:
                 _renderScene(_pFreeCam->getViewMatrix(), _pFreeCam->getProjectionMatrix());
+                //send camera position to get view direction
+                _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.cameraPosition, _pFreeCam->getPosition());
                 break;
         }
-        std::cout << _firstPerson << std::endl;
         if (_firstPerson) {
 
             glViewport(0, 0, framebufferWidth / 4, framebufferHeight / 4);
@@ -615,6 +658,7 @@ void MPEngine::_computeAndSendMatrixUniforms(glm::mat4 modelMtx, glm::mat4 viewM
     glm::mat4 mvpMtx = projMtx * viewMtx * modelMtx;
     // then send it to the shader on the GPU to apply to every vertex
     _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.mvpMatrix, mvpMtx);
+    _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.modelMtx, modelMtx);
 
     // compute and send the normal matrix
     glm::mat3 normalMtx = glm::mat3(glm::transpose(glm::inverse(modelMtx)));

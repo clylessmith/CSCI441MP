@@ -107,6 +107,7 @@ private:
     /// \desc information list of all the buildings to draw
     std::vector<BuildingData> _buildings;
 
+    int _currentLight;
     int _currentHero;
     int _currentCamera;
     bool _firstPerson;
@@ -120,12 +121,18 @@ private:
     struct LightingShaderUniformLocations {
         /// \desc precomputed MVP matrix location
         GLint mvpMatrix;
+        GLint modelMtx;
+
         /// \desc material diffuse color location
         GLint materialColor;
         // add new uniforms
         GLint lightDirection;
         GLint lightColor;
         GLint normalMatrix;
+        GLint pointLightPos;
+        GLint cameraPosition;
+        int currentLight;
+
 
 
     } _lightingShaderUniformLocations;
@@ -135,6 +142,7 @@ private:
         GLint vPos;
         // add new attributes
         GLint vertexNormal;
+
 
     } _lightingShaderAttributeLocations;
 
