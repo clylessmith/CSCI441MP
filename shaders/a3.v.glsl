@@ -18,6 +18,10 @@ uniform vec3 cameraPosition;
 
 uniform vec3 pointLightPos;
 
+uniform vec3 spotLightPos;
+
+uniform vec3 spotLightLookatPoint;
+
 uniform int currentLight;
 
 // attribute inputs
@@ -66,12 +70,12 @@ void main() {
     }
     else if (currentLight == 8){
         //DIRECTION LIGHT ////
+
         // compute Light vector
         vec3 lightVector = -lightDirection / abs(lightDirection);
 
         // transform normal vector
         vec3 vNormalNew =  normalize( normalMatrix * vNormal);
-
 
         // perform diffuse calculation
         diffuse = 0.3 * (materialColor * lightColor * max(dot(lightVector,  vNormalNew),0));
@@ -81,9 +85,43 @@ void main() {
 
         ambient = 0.1 * lightColor * materialColor;
         //DIRECTIONAL LIGHT ////
-        }
+    }
+    else if (currentLight == 9){
+        //SPOT LIGHT ////
+        vec3 lightToVertexVec = vec3( modelMtx * vec4(vPos,1.0)) - spotLightPos;
 
+        vec3 spotLightDirection = spotLightPos - vec3( modelMtx * vec4(vPos,1.0));
+
+        // using the vector from the camera to vpos, and vec from vpos to camera get angle
+        float angleBetweenLightAndVertex = dot(spotLightDirection, lightToVertexVec);
+
+        if(angleBetweenLightAndVertex >= 0.10 ){
+            specular = vec3(0.0,0.0,0.0);
+            diffuse = vec3(0.0,0.0,0.0);
+
+            ambient = 0.2 * lightColor * materialColor;
+
+        } else{
+
+            vec3 lightVector = normalize(spotLightDirection);
+
+            // transform normal vector
+            vec3 vNormalNew =  normalize( normalMatrix * vNormal);
+
+            // vec3 pointLightColor = ()
+
+            // perform diffuse calculation
+            diffuse = 0.5 * (materialColor * lightColor * max(dot(lightVector,  vNormalNew),0));
+
+            vec3 reflectance =  0.05 * (-spotLightDirection + 2 * (max(dot(vNormalNew, spotLightDirection),0)) * vNormalNew);
+
+            specular = 0.05 *( lightColor * materialColor * pow(max(dot(reflectance, viewDirection), 0),2));
+
+            ambient = 0.2 * lightColor * materialColor;
+            
+        }
+        //SPOT LIGHT ////
+    }
         // assign the color for this vertex
         color = diffuse  + specular + ambient;
-
 }

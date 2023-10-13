@@ -130,6 +130,11 @@ private:
         GLint lightColor;
         GLint normalMatrix;
         GLint pointLightPos;
+
+        GLint spotLightPos;
+        GLint spotLightLookatPoint;
+
+
         GLint cameraPosition;
         int currentLight;
 
