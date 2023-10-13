@@ -66,6 +66,10 @@ private:
 
     /// \desc the arcball camera in our world
     ArcballCam *_pArcballCam;
+
+    /// \desc the first person camera
+    CSCI441::FreeCam *_pFPCam;
+
     /// \desc pair of values to store the speed the camera can move/rotate.
     /// \brief x = forward/backward delta, y = rotational delta
     glm::vec2 _cameraSpeed;

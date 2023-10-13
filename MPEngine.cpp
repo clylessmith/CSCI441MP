@@ -41,6 +41,7 @@ MPEngine::MPEngine()
 MPEngine::~MPEngine() {
     delete _pArcballCam;
     delete _pFreeCam;
+    delete _pFPCam;
 }
 
 void MPEngine::handleKeyEvent(GLint key, GLint action) {
@@ -278,6 +279,23 @@ void MPEngine::mSetupScene() {
     _pFreeCam->recomputeOrientation();
     _cameraSpeed = glm::vec2(0.25f, 0.02f);
 
+    _pFPCam = new CSCI441::FreeCam();
+    _pFPCam->setPosition(glm::vec3(_heroCoords[0], 4, _heroCoords[2])
+                            + glm::vec3(2*cos(_heroTheta),4,2*sin(_heroTheta)));
+    _pFPCam->setTheta(_heroTheta);
+    _pFPCam->setPhi(M_PI_2);
+    _pFPCam->recomputeOrientation();
+
+//    _pFPCam = new ArcballCam();
+//    _pFPCam->setTheta( _heroTheta );
+//    _pFPCam->setPhi(M_PI / 2.0f );
+//    _pFPCam->setRadius(0.0f);
+//    _pFPCam->setPosition(_pFPCam->getPosition()+glm::vec3(cos(_heroTheta),0,sin(_heroTheta)));
+//    _pFPCam->setLookAtPoint(glm::vec3(_heroCoords[0], 4, _heroCoords[2]));
+//    _pFPCam->recomputeOrientation();
+
+    _cameraSpeed = glm::vec2(0.25f, 0.02f);
+
     // set lighting uniforms
     glm::vec3 lightDirection = glm::vec3(-1,-1,-1);
     glm::vec3 lightColor = glm::vec3(1.0f,1.0f,1.0f);
@@ -421,6 +439,9 @@ void MPEngine::_updateScene() {
         }
         _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
+        _pFPCam->setTheta(-_heroTheta + M_PI_2);
+        _pFPCam->setPosition(_heroCoords + glm::vec3(2*cos(-_heroTheta),4,2*sin(-_heroTheta)));
+        _pFPCam->recomputeOrientation();
     }
     // turn hero left
     if( _keys[GLFW_KEY_A] ) {
@@ -441,6 +462,9 @@ void MPEngine::_updateScene() {
         }
         _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
+        _pFPCam->setTheta(-_heroTheta + M_PI_2);
+        _pFPCam->setPosition(_heroCoords + glm::vec3(2*cos(-_heroTheta),4,2*sin(-_heroTheta)));
+        _pFPCam->recomputeOrientation();
     }
     // move hero forward
     if( _keys[GLFW_KEY_W]) {
@@ -469,6 +493,8 @@ void MPEngine::_updateScene() {
 
         _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
+        _pFPCam->setPosition(_heroCoords + glm::vec3(2*cos(-_heroTheta),4,2*sin(-_heroTheta)));
+        _pFPCam->recomputeOrientation();
     }
 
     // move hero backward
@@ -498,6 +524,8 @@ void MPEngine::_updateScene() {
         }
         _pArcballCam->setLookAtPoint(_heroCoords);
         _pArcballCam->recomputeOrientation();
+        _pFPCam->setPosition(_heroCoords + glm::vec3(2*cos(-_heroTheta),4,2*sin(-_heroTheta)));
+        _pFPCam->recomputeOrientation();
     }
 
 
@@ -593,11 +621,10 @@ void MPEngine::run() {
                 _renderScene(_pFreeCam->getViewMatrix(), _pFreeCam->getProjectionMatrix());
                 break;
         }
-        std::cout << _firstPerson << std::endl;
-        if (_firstPerson) {
 
+        if (_firstPerson) {
             glViewport(0, 0, framebufferWidth / 4, framebufferHeight / 4);
-            _renderScene(_pArcballCam->getViewMatrix(), _pArcballCam->getProjectionMatrix());
+            _renderScene(_pFPCam->getViewMatrix(), _pFPCam->getProjectionMatrix());
         }
         _updateScene();
 
