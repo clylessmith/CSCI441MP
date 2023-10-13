@@ -29,6 +29,7 @@ Peanut::Peanut( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint n
 
 void Peanut::drawPeanut( glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx ) {
     modelMtx = glm::scale(modelMtx, glm::vec3(30.0f,30.0f, 30.0f));
+    modelMtx = glm::rotate(modelMtx, (float)M_PI, CSCI441::Y_AXIS);
     _drawTorso(modelMtx, viewMtx, projMtx);
     _drawArm(true, modelMtx, viewMtx, projMtx);
     _drawArm(false, modelMtx, viewMtx, projMtx);
@@ -41,8 +42,8 @@ void Peanut::drawPeanut( glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMt
 
 void Peanut::recomputeOrientation() {
     // compute direction vector based on spherical to cartesian conversion
-    _charDirection.x =  glm::sin(_charTheta );
-    _charDirection.z = -glm::cos(_charTheta );
+    _charDirection.x =  glm::cos(_charTheta );
+    _charDirection.z = -glm::sin(_charTheta );
 
     // and normalize this directional vector!
     _charDirection = glm::normalize(_charDirection );

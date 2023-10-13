@@ -296,14 +296,6 @@ void MPEngine::mSetupScene() {
     _pFPCam->setPhi(M_PI_2);
     _pFPCam->recomputeOrientation();
 
-//    _pFPCam = new ArcballCam();
-//    _pFPCam->setTheta( _heroTheta );
-//    _pFPCam->setPhi(M_PI / 2.0f );
-//    _pFPCam->setRadius(0.0f);
-//    _pFPCam->setPosition(_pFPCam->getPosition()+glm::vec3(cos(_heroTheta),0,sin(_heroTheta)));
-//    _pFPCam->setLookAtPoint(glm::vec3(_heroCoords[0], 4, _heroCoords[2]));
-//    _pFPCam->recomputeOrientation();
-
     _cameraSpeed = glm::vec2(0.25f, 0.02f);
 
     // set lighting uniforms
@@ -361,6 +353,8 @@ void MPEngine::mCleanupBuffers() {
 
     fprintf( stdout, "[INFO]: ...deleting models..\n" );
     delete _bardo;
+    delete _peanut;
+    delete _dorock;
 }
 
 //*************************************************************************************
@@ -452,7 +446,7 @@ void MPEngine::_updateScene() {
 
     // turn hero right
     if( _keys[GLFW_KEY_D] ) {
-        _heroTheta = -_cameraSpeed.y;
+        _heroTheta -= _cameraSpeed.y;
 
         switch (_currentHero) {
             case 1:
@@ -476,7 +470,7 @@ void MPEngine::_updateScene() {
     }
     // turn hero left
     if( _keys[GLFW_KEY_A] ) {
-        _heroTheta = _cameraSpeed.y;
+        _heroTheta += _cameraSpeed.y;
 
         switch (_currentHero) {
             case 1:
