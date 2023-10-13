@@ -506,7 +506,7 @@ void MPEngine::_updateScene() {
                 _heroCoords = _bardo->coords;
                 break;
             case 2:
-                _peanut->moveForward();
+                _peanut->moveForward(WORLD_SIZE);
                 _heroCoords = _peanut->getPosition();
                 break;
             case 3:
@@ -537,7 +537,7 @@ void MPEngine::_updateScene() {
                 _heroCoords = _bardo->coords;
                 break;
             case 2:
-                _peanut->moveBackward();
+                _peanut->moveBackward(WORLD_SIZE);
                 _heroCoords = _peanut->getPosition();
                 break;
             case 3:

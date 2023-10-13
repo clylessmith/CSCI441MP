@@ -9,8 +9,8 @@
 class Peanut {
 public:
     void recomputeOrientation();
-    void moveForward();
-    void moveBackward();
+    void moveForward(GLfloat worldSize);
+    void moveBackward(GLfloat worldSize);
     void rotate(const GLfloat theta);
     /// \desc creates a simple plane that gives the appearance of flight
     /// \param shaderProgramHandle shader program handle that the plane should be drawn using

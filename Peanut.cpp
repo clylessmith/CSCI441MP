@@ -14,6 +14,7 @@ Peanut::Peanut( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint n
 
     _legAngle = 0.0f;
     _reverseDirection = false;
+    _charTheta = M_PI_2;
 
     _colorTorso = glm::vec3(0.749, 0.561, 0.165);
     _scaleTorso = glm::vec3( 0.5f, 1.5f, 1.0f );
@@ -49,8 +50,17 @@ void Peanut::recomputeOrientation() {
     _charDirection = glm::normalize(_charDirection );
 }
 
-void Peanut::moveForward() {
-    _charPosition += _charDirection * 0.1f;
+void Peanut::moveForward(GLfloat worldSize) {
+    if (_charPosition.x > -worldSize && _charPosition.x < worldSize)
+        _charPosition.x += _charDirection.x * 0.6f;
+    else
+        _charPosition.x *= 0.9;
+
+    if (_charPosition.z > -worldSize && _charPosition.z < worldSize)
+        _charPosition.z += _charDirection.z * 0.6f;
+    else
+        _charPosition.z *= 0.9;
+
     if (_legAngle > _PI / 2.0f) {
         _legAngle = -_PI / 16.0f;
     }
@@ -65,8 +75,17 @@ void Peanut::moveForward() {
     }
 }
 
-void Peanut::moveBackward() {
-    _charPosition -= _charDirection * 0.1f;
+void Peanut::moveBackward(GLfloat worldSize) {
+    if (_charPosition.x > -worldSize && _charPosition.x < worldSize)
+        _charPosition.x -= _charDirection.x * 0.6f;
+    else
+        _charPosition.x *= 0.9;
+
+    if (_charPosition.z > -worldSize && _charPosition.z < worldSize)
+        _charPosition.z -= _charDirection.z * 0.6f;
+    else
+        _charPosition.z *= 0.9;
+
     if (_legAngle > _PI / 2.0f) {
         _legAngle = -_PI / 16.0f;
     }
