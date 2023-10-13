@@ -14,6 +14,7 @@ Peanut::Peanut( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint n
 
     _legAngle = 0.0f;
     _reverseDirection = false;
+    _charTheta = M_PI_2;
 
     _colorTorso = glm::vec3(0.749, 0.561, 0.165);
     _scaleTorso = glm::vec3( 0.5f, 1.5f, 1.0f );
@@ -29,6 +30,7 @@ Peanut::Peanut( GLuint shaderProgramHandle, GLint mvpMtxUniformLocation, GLint n
 
 void Peanut::drawPeanut( glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx ) {
     modelMtx = glm::scale(modelMtx, glm::vec3(30.0f,30.0f, 30.0f));
+    modelMtx = glm::rotate(modelMtx, (float)M_PI, CSCI441::Y_AXIS);
     _drawTorso(modelMtx, viewMtx, projMtx);
     _drawArm(true, modelMtx, viewMtx, projMtx);
     _drawArm(false, modelMtx, viewMtx, projMtx);
@@ -41,15 +43,24 @@ void Peanut::drawPeanut( glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMt
 
 void Peanut::recomputeOrientation() {
     // compute direction vector based on spherical to cartesian conversion
-    _charDirection.x =  glm::sin(_charTheta );
-    _charDirection.z = -glm::cos(_charTheta );
+    _charDirection.x =  glm::cos(_charTheta );
+    _charDirection.z = -glm::sin(_charTheta );
 
     // and normalize this directional vector!
     _charDirection = glm::normalize(_charDirection );
 }
 
-void Peanut::moveForward() {
-    _charPosition += _charDirection * 0.1f;
+void Peanut::moveForward(GLfloat worldSize) {
+    if (_charPosition.x > -worldSize && _charPosition.x < worldSize)
+        _charPosition.x += _charDirection.x * 0.6f;
+    else
+        _charPosition.x *= 0.9;
+
+    if (_charPosition.z > -worldSize && _charPosition.z < worldSize)
+        _charPosition.z += _charDirection.z * 0.6f;
+    else
+        _charPosition.z *= 0.9;
+
     if (_legAngle > _PI / 2.0f) {
         _legAngle = -_PI / 16.0f;
     }
@@ -64,8 +75,17 @@ void Peanut::moveForward() {
     }
 }
 
-void Peanut::moveBackward() {
-    _charPosition -= _charDirection * 0.1f;
+void Peanut::moveBackward(GLfloat worldSize) {
+    if (_charPosition.x > -worldSize && _charPosition.x < worldSize)
+        _charPosition.x -= _charDirection.x * 0.6f;
+    else
+        _charPosition.x *= 0.9;
+
+    if (_charPosition.z > -worldSize && _charPosition.z < worldSize)
+        _charPosition.z -= _charDirection.z * 0.6f;
+    else
+        _charPosition.z *= 0.9;
+
     if (_legAngle > _PI / 2.0f) {
         _legAngle = -_PI / 16.0f;
     }

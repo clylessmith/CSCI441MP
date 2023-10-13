@@ -109,7 +109,7 @@ void Dorock::moveForward(GLfloat worldSize){
 }
 
 void Dorock::rotate(const GLfloat theta) {
-    _dorockAngle += theta;
+    _dorockAngle = theta;
 
 }
 
