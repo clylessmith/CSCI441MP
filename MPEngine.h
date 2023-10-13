@@ -107,6 +107,7 @@ private:
     /// \desc information list of all the buildings to draw
     std::vector<BuildingData> _buildings;
 
+    int _currentLight;
     int _currentHero;
     int _currentCamera;
     bool _firstPerson;
@@ -129,6 +130,8 @@ private:
         GLint lightColor;
         GLint normalMatrix;
         GLint pointLightPos;
+        GLint cameraPosition;
+        int currentLight;
 
 
 

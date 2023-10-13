@@ -14,7 +14,11 @@ uniform vec3 lightColor;
 
 uniform vec3 materialColor;             // the material color for our vertex (& whole object)
 
+uniform vec3 cameraPosition;
+
 uniform vec3 pointLightPos;
+
+uniform int currentLight;
 
 // attribute inputs
 layout(location = 0) in vec3 vPos;      // the position of this specific vertex in object space
@@ -25,50 +29,61 @@ layout(location = 1) in vec3 vNormal;
 layout(location = 0) out vec3 color;    // color to apply to this vertex
 
 void main() {
+
+    vec3 viewDirection = normalize( cameraPosition - vPos);
     // transform & output the vertex in clip space
     gl_Position = mvpMatrix * vec4(vPos, 1.0);
 
-    vec3 pointLightDirection = pointLightPos - vec3( modelMtx * vec4(vPos,1.0));
+    vec3 diffuse;
+    vec3 specular;
+    vec3 ambient;
 
-    // vec3 worldSpaceLightDirection = modelMtx * pointLightDirection;
-    ////POINT LIGHT ////
-    // vec3 lightVector = pointLightDirection / abs(pointLightDirection);
-    vec3 lightVector = normalize(pointLightDirection);
+    //DETERMINE LIGHT (7 point light, 8 directional, 9 spotlight)
+    if(currentLight == 7){
 
-    // transform normal vector
-    vec3 vNormalNew =  normalize( normalMatrix * vNormal);
+        ////POINT LIGHT ////
 
+        vec3 pointLightDirection = pointLightPos - vec3( modelMtx * vec4(vPos,1.0));
 
-    // perform diffuse calculation
-    vec3 iDiffuse = 0.3 * (materialColor * lightColor * max(dot(lightVector,  vNormalNew),0));
+        vec3 lightVector = normalize(pointLightDirection);
 
-    vec3 reflectance = 0 *  0.3 * (-pointLightDirection + 2 * (max(dot(vNormalNew, pointLightDirection),0)) * vNormalNew);
-    vec3 ambient = 0.1 * lightColor * materialColor;
+        // transform normal vector
+        vec3 vNormalNew =  normalize( normalMatrix * vNormal);
 
+        // vec3 pointLightColor = ()
 
-    // assign the color for this vertex
-    color = iDiffuse  + reflectance + ambient;
+        // perform diffuse calculation
+        diffuse = 0.5 * (materialColor * lightColor * max(dot(lightVector,  vNormalNew),0));
 
+        vec3 reflectance =  0.05 * (-pointLightDirection + 2 * (max(dot(vNormalNew, pointLightDirection),0)) * vNormalNew);
 
-    ////END OF POINT LIGHT////
+        specular = 0.05 *( lightColor * materialColor * pow(max(dot(reflectance, viewDirection), 0),2));
 
-    ////DIRECTION LIGHT ////
-    // compute Light vector
-    // vec3 lightVector = -lightDirection / abs(lightDirection);
+        ambient = 0.2 * lightColor * materialColor;
+        
+        //END OF POINT LIGHT////
 
-    // // transform normal vector
-    // vec3 vNormalNew =  normalize( normalMatrix * vNormal);
+    }
+    else if (currentLight == 8){
+        //DIRECTION LIGHT ////
+        // compute Light vector
+        vec3 lightVector = -lightDirection / abs(lightDirection);
 
-
-    // // perform diffuse calculation
-    // vec3 iDiffuse = 0.3 * (materialColor * lightColor * max(dot(lightVector,  vNormalNew),0));
-
-    // vec3 reflectance = 0.3 * (-lightDirection + 2 * (max(dot(vNormalNew, lightDirection),0)) * vNormalNew);
-    // vec3 ambient = 0.1 * lightColor * materialColor;
+        // transform normal vector
+        vec3 vNormalNew =  normalize( normalMatrix * vNormal);
 
 
-    // // assign the color for this vertex
-    // color = iDiffuse  + reflectance + ambient;
-    ////DIRECTIONAL LIGHT ////
+        // perform diffuse calculation
+        diffuse = 0.3 * (materialColor * lightColor * max(dot(lightVector,  vNormalNew),0));
+
+        vec3 reflectance = 0.3 * (-lightDirection + 2 * (max(dot(vNormalNew, lightDirection),0)) * vNormalNew);
+        specular = 0.05 *( lightColor * materialColor * pow(max(dot(reflectance, viewDirection), 0),20));
+
+        ambient = 0.1 * lightColor * materialColor;
+        //DIRECTIONAL LIGHT ////
+        }
+
+        // assign the color for this vertex
+        color = diffuse  + specular + ambient;
 
 }
