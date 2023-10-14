@@ -30,7 +30,7 @@ MPEngine::MPEngine()
 
     _mousePosition = glm::vec2(MOUSE_UNINITIALIZED, MOUSE_UNINITIALIZED );
     _leftMouseButtonState = GLFW_RELEASE;
-    _heroCoords = glm::vec3(0, 0, 0);
+    _heroCoords = glm::vec3(0, 0, -15);
     _idleTrans = 0.01;
     _orbHover = 0.01;
     _currentHero = 1;
@@ -46,9 +46,11 @@ MPEngine::~MPEngine() {
 }
 
 void MPEngine::handleKeyEvent(GLint key, GLint action) {
-    if(key != GLFW_KEY_UNKNOWN)
+    if(key != GLFW_KEY_UNKNOWN && key != GLFW_KEY_6)
         _keys[key] = ((action == GLFW_PRESS) || (action == GLFW_REPEAT));
-
+    if (key == GLFW_KEY_6) {
+        _keys[key] = ((action == GLFW_PRESS));
+    }
     if(action == GLFW_PRESS) {
         switch( key ) {
             // quit!
@@ -248,28 +250,58 @@ void MPEngine::_generateEnvironment() {
     // psych! everything's on a grid.
     for(int i = LEFT_END_POINT; i < RIGHT_END_POINT; i += GRID_SPACING_WIDTH) {
         for(int j = BOTTOM_END_POINT; j < TOP_END_POINT; j += GRID_SPACING_LENGTH) {
-            // don't just draw a building ANYWHERE.
-            if( i % 2 && j % 2 && getRand() < 0.0025f ) {
+            // don't just draw a tree or lamp ANYWHERE.
+            float randomNum = getRand();
+            if( i % 2 && j % 2 && randomNum < 0.0025f ) {
                 // translate to spot
                 glm::mat4 transToSpotMtx = glm::translate( glm::mat4(1.0), glm::vec3(i, 0.0f, j) );
+                GLdouble height;
+                // draw a lamp
+                if (randomNum < 0.00125f) {
 
-                // compute random height
-                GLdouble height = powf(getRand(), 2.5)*25 + 20;
+                    // lamp height
+                    height = 40.0;
 
-                // scale to building size
-                glm::mat4 scaleToHeightMtx = glm::scale( glm::mat4(1.0), glm::vec3(1, height, 1) );
+                    // scale to lamp size
+                    glm::mat4 scaleToHeightMtx = glm::scale( glm::mat4(1.0), glm::vec3(1, height, 1) );
 
-                // translate up to grid
-                glm::mat4 transToHeight = glm::translate( glm::mat4(1.0), glm::vec3(0, height/2.0f, 0) );
+                    // compute full model matrix
+                    glm::mat4 modelMatrix = scaleToHeightMtx * transToSpotMtx;
 
-                // compute full model matrix
-                glm::mat4 modelMatrix = transToHeight * scaleToHeightMtx * transToSpotMtx;
+                    // set lamp color
+                    glm::vec3 colorLamp(0.92f, 0.67f, 0.13f);
+                    // set lamppost
+                    glm::vec3 colorPost( 0.26f, 0.24f, 0.23f );
+                    // store building properties
+                    LampData currentLamp = {modelMatrix, colorLamp, colorPost, height};
+                    _lamps.emplace_back( currentLamp );
+                    if (currentLampIdx < 14) {
+                        _lampCoords[currentLampIdx] = glm::vec3(i, height, j);
+                        currentLampIdx++;
+                    }
 
-                // compute random color
-                glm::vec3 color( 0.36, 0.26, 0.2 );
-                // store building properties
-                BuildingData currentBuilding = {modelMatrix, color, height};
-                _buildings.emplace_back( currentBuilding );
+                }
+                // draw a tree
+                else {
+
+                    // compute random height
+                    height = powf(getRand(), 2.5)*25 + 20;
+
+                    // scale to building size
+                    glm::mat4 scaleToHeightMtx = glm::scale( glm::mat4(1.0), glm::vec3(1, height, 1) );
+
+                    // translate up to grid
+                    glm::mat4 transToHeight = glm::translate( glm::mat4(1.0), glm::vec3(0, height/2.0f, 0) );
+
+                    // compute full model matrix
+                    glm::mat4 modelMatrix = transToHeight * scaleToHeightMtx * transToSpotMtx;
+
+                    // set tree trunk color
+                    glm::vec3 color( 0.36, 0.26, 0.2 );
+                    // store building properties
+                    BuildingData currentBuilding = {modelMatrix, color, height};
+                    _buildings.emplace_back( currentBuilding );
+                }
             }
         }
     }
@@ -304,13 +336,16 @@ void MPEngine::mSetupScene() {
 
     // set lighting uniforms
     glm::vec3 lightDirection = glm::vec3(-1,-1,-1);
-    glm::vec3 lightColor = glm::vec3(0.8f,0.8f,0.8f);
+    glm::vec3 lightColor = glm::vec3(0.88f,0.62f,0.38);
+    glm::vec3 spotLightColor = glm::vec3(0.12f,0.63, 0.92);
 
-    glm::vec3 pointLightPos = glm::vec3(0.0f,30.0f,0.0f);
+    glm::vec3 pointLightPos = glm::vec3(100.0f,50.0f,0.0f);
 
-    glm::vec3 spotLightPos = glm::vec3(0.0f, 50.0f, 0.0 );
+    glm::vec3 spotLightPos = glm::vec3(-100.0f, 50.0f, 0.0 );
 
     glm::vec3 spotLightLookatPoint = glm::vec3(0.0f, 0.0f, 0.0 );
+
+    GLfloat spotLightCutoff = M_PI / 32;
 
     //Load uniforms for spot light
     glProgramUniform3fv(
@@ -326,6 +361,21 @@ void MPEngine::mSetupScene() {
             1,
             &spotLightLookatPoint[0]
             );
+
+    glProgramUniform3fv(
+            _lightingShaderProgram->getShaderProgramHandle(),
+            _lightingShaderUniformLocations.spotLightColor,
+            1,
+            &spotLightColor[0]
+    );
+
+
+    glProgramUniform3fv(
+            _lightingShaderProgram->getShaderProgramHandle(),
+            _lightingShaderUniformLocations.spotLightCutoff,
+            1,
+            &spotLightCutoff
+    );
 
 
     // load uniforms for directional light and color
@@ -408,12 +458,18 @@ void MPEngine::_renderScene(glm::mat4 viewMtx, glm::mat4 projMtx) const {
     glDrawElements(GL_TRIANGLE_STRIP, _numGroundPoints, GL_UNSIGNED_SHORT, (void*)0);
     //// END DRAWING THE GROUND PLANE ////
 
-    //// BEGIN DRAWING THE BUILDINGS ////
+    //// BEGIN DRAWING THE TREES ////
     for( const BuildingData& currentBuilding : _buildings ) {
 
         _drawTree(currentBuilding, viewMtx, projMtx);
     }
-    //// END DRAWING THE BUILDINGS ////
+    //// END DRAWING THE TREES ////
+
+    //// BEGIN DRAWING THE LAMPS ////
+    for (const LampData& currentLamp: _lamps) {
+        _drawLamp(currentLamp, viewMtx, projMtx);
+    }
+    //// END DRAWING THE LAMPS ////
 
     //// BEGIN DRAWING BARDO ////
     glm::mat4 modelMtx(1.0f);
@@ -638,7 +694,7 @@ void MPEngine::_updateScene() {
         _currentCamera = 5;
     }
     if (_keys[GLFW_KEY_6]) {
-        _firstPerson = true;
+        _firstPerson = not _firstPerson;
     }
     if (_keys[GLFW_KEY_7]) {
         _currentLight = 7;
@@ -688,7 +744,10 @@ void MPEngine::run() {
         }
 
         if (_firstPerson) {
+
             glViewport(0, 0, framebufferWidth / 4, framebufferHeight / 4);
+            glScissor(0,0, framebufferWidth / 4, framebufferHeight / 4);
+            glClear(GL_DEPTH_BUFFER_BIT);
             _renderScene(_pFPCam->getViewMatrix(), _pFPCam->getProjectionMatrix());
         }
         _updateScene();
@@ -736,6 +795,25 @@ void MPEngine::_drawTree(MPEngine::BuildingData building, glm::mat4 viewMtx, glm
 
 
 }
+void MPEngine::_drawLamp(MPEngine::LampData lamp, glm::mat4 viewMtx, glm::mat4 projMtx) const {
+    _computeAndSendMatrixUniforms(lamp.modelMatrix, viewMtx, projMtx);
+
+    _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.materialColor, lamp.colorPole);
+
+    CSCI441::drawSolidCylinder(1.0f, 1.0f, 1.0f, 5, 5);
+
+    glm::mat4 modelMtx1 = glm::translate(lamp.modelMatrix, glm::vec3(0, 1, 0));;
+    modelMtx1 = glm::scale(modelMtx1, glm::vec3(4.0f, 0.2f, 4.0f));
+
+
+
+    _computeAndSendMatrixUniforms(modelMtx1, viewMtx, projMtx);
+
+    _lightingShaderProgram->setProgramUniform(_lightingShaderUniformLocations.materialColor, lamp.colorLamp);
+
+    CSCI441::drawSolidCube(1.0f);
+}
+
 
 //*************************************************************************************
 //

@@ -111,6 +111,16 @@ private:
     /// \desc information list of all the buildings to draw
     std::vector<BuildingData> _buildings;
 
+    struct LampData {
+        glm::mat4 modelMatrix;
+        glm::vec3 colorLamp;
+        glm::vec3 colorPole;
+        GLdouble lampHeight;
+    };
+
+    std::vector<LampData> _lamps;
+    glm::vec3 _lampCoords[15];
+    int currentLampIdx = 0;
     int _currentLight;
     int _currentHero;
     int _currentCamera;
@@ -137,6 +147,8 @@ private:
 
         GLint spotLightPos;
         GLint spotLightLookatPoint;
+        GLfloat spotLightCutoff;
+        GLint spotLightColor;
 
 
         GLint cameraPosition;
@@ -163,6 +175,7 @@ private:
     /// \param projMtx camera projection matrix
     void _computeAndSendMatrixUniforms(glm::mat4 modelMtx, glm::mat4 viewMtx, glm::mat4 projMtx) const;
     void _drawTree(BuildingData building, glm::mat4 viewMtx, glm::mat4 projMtx) const;
+    void _drawLamp(LampData lamp, glm::mat4 viewMtx, glm::mat4 projMtx) const;
 
     // counter for animation
     int _framesPassed;

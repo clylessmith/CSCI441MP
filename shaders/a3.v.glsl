@@ -22,6 +22,8 @@ uniform vec3 spotLightPos;
 
 uniform vec3 spotLightLookatPoint;
 
+uniform vec3 spotLightColor;
+
 uniform int currentLight;
 
 // attribute inputs
@@ -38,90 +40,81 @@ void main() {
     // transform & output the vertex in clip space
     gl_Position = mvpMatrix * vec4(vPos, 1.0);
 
-    vec3 diffuse;
-    vec3 specular;
-    vec3 ambient;
+    vec3 colorPoint;
+    vec3 colorDir;
+    vec3 colorSpot;
 
-    //DETERMINE LIGHT (7 point light, 8 directional, 9 spotlight)
-    if(currentLight == 7){
+    // transform normal vector
+    vec3 vNormalNew =  normalize( normalMatrix * vNormal);
 
-        ////POINT LIGHT ////
+    ////POINT LIGHT ////
 
-        vec3 pointLightDirection = pointLightPos - vec3( modelMtx * vec4(vPos,1.0));
+    vec3 pointLightDirection = pointLightPos - vec3( modelMtx * vec4(vPos,1.0));
 
-        vec3 lightVector = normalize(pointLightDirection);
+    vec3 lightVectorPoint = normalize(pointLightDirection);
 
-        // transform normal vector
-        vec3 vNormalNew =  normalize( normalMatrix * vNormal);
+    vec3 diffusePoint = 0.05 * (max(dot(lightVectorPoint,  vNormalNew),0)) * materialColor * lightColor;
 
-        // vec3 pointLightColor = ()
+    vec3 reflectancePoint =  0.05 * (-pointLightDirection + 2 * (max(dot(vNormalNew, pointLightDirection),0)) * vNormalNew);
+
+    vec3 specularPoint = 0.05 *( pow(max(dot(reflectancePoint, viewDirection), 0),2)) * materialColor * lightColor;
+
+    vec3 ambientPoint = 0.1  * materialColor * lightColor;
+
+    colorPoint = diffusePoint + specularPoint + ambientPoint;
+    //END OF POINT LIGHT////
+
+
+    //DIRECTION LIGHT ////
+
+    // compute Light vector
+    vec3 lightVectorDir = -lightDirection / abs(lightDirection);
+
+    // perform diffuse calculation
+    vec3 diffuseDir = 0.05 * ( max(dot(lightVectorDir,  vNormalNew),0)) * materialColor * lightColor;
+
+    vec3 reflectanceDir = 0.05 * (-lightDirection + 2 * (max(dot(vNormalNew, lightDirection),0)) * vNormalNew);
+    vec3 specularDir = 0.05 *( pow(max(dot(reflectanceDir, viewDirection), 0),20)) * materialColor * lightColor;
+
+    vec3 ambientDir = 0.1  * materialColor * lightColor;
+
+    colorDir = diffuseDir + specularDir + ambientDir;
+    //DIRECTIONAL LIGHT ////
+
+
+    //SPOT LIGHT ////
+    vec3 lightToVertexVec = vec3( modelMtx * vec4(vPos,1.0)) - spotLightPos;
+
+    vec3 spotLightDirection = spotLightPos - vec3( modelMtx * vec4(vPos,1.0));
+
+    // using the vector from the camera to vpos, and vec from vpos to camera get angle
+    float angleBetweenLightAndVertex = dot(spotLightDirection, lightToVertexVec);
+
+    vec3 diffuseSpot;
+    vec3 specularSpot;
+    vec3 ambientSpot;
+    if(angleBetweenLightAndVertex >= 0.10 ){
+        specularSpot = vec3(0.0,0.0,0.0);
+        diffuseSpot = vec3(0.0,0.0,0.0);
+
+        ambientSpot = 0.1 * lightColor;
+
+    } else{
+        vec3 lightVector = normalize(spotLightDirection);
 
         // perform diffuse calculation
-        diffuse = 0.5 * (materialColor * lightColor * max(dot(lightVector,  vNormalNew),0));
+        diffuseSpot = 0.05 * (spotLightColor * max(dot(lightVector,  vNormalNew),0)) * materialColor;
 
-        vec3 reflectance =  0.05 * (-pointLightDirection + 2 * (max(dot(vNormalNew, pointLightDirection),0)) * vNormalNew);
+        vec3 reflectanceSpot =  0.05 * (-spotLightDirection + 2 * (max(dot(vNormalNew, spotLightDirection),0)) * vNormalNew);
+        specularSpot = 0.05 *( pow(max(dot(reflectanceSpot, viewDirection), 0),2)) * materialColor * spotLightColor;
 
-        specular = 0.05 *( lightColor * materialColor * pow(max(dot(reflectance, viewDirection), 0),2));
-
-        ambient = 0.2 * lightColor * materialColor;
-        
-        //END OF POINT LIGHT////
+        ambientSpot = 0.1  * materialColor * spotLightColor;
 
     }
-    else if (currentLight == 8){
-        //DIRECTION LIGHT ////
 
-        // compute Light vector
-        vec3 lightVector = -lightDirection / abs(lightDirection);
+    colorSpot = specularSpot + ambientSpot + diffuseSpot;
+    //SPOT LIGHT ////
 
-        // transform normal vector
-        vec3 vNormalNew =  normalize( normalMatrix * vNormal);
-
-        // perform diffuse calculation
-        diffuse = 0.3 * (materialColor * lightColor * max(dot(lightVector,  vNormalNew),0));
-
-        vec3 reflectance = 0.3 * (-lightDirection + 2 * (max(dot(vNormalNew, lightDirection),0)) * vNormalNew);
-        specular = 0.05 *( lightColor * materialColor * pow(max(dot(reflectance, viewDirection), 0),20));
-
-        ambient = 0.1 * lightColor * materialColor;
-        //DIRECTIONAL LIGHT ////
-    }
-    else if (currentLight == 9){
-        //SPOT LIGHT ////
-        vec3 lightToVertexVec = vec3( modelMtx * vec4(vPos,1.0)) - spotLightPos;
-
-        vec3 spotLightDirection = spotLightPos - vec3( modelMtx * vec4(vPos,1.0));
-
-        // using the vector from the camera to vpos, and vec from vpos to camera get angle
-        float angleBetweenLightAndVertex = dot(spotLightDirection, lightToVertexVec);
-
-        if(angleBetweenLightAndVertex >= 0.10 ){
-            specular = vec3(0.0,0.0,0.0);
-            diffuse = vec3(0.0,0.0,0.0);
-
-            ambient = 0.2 * lightColor * materialColor;
-
-        } else{
-
-            vec3 lightVector = normalize(spotLightDirection);
-
-            // transform normal vector
-            vec3 vNormalNew =  normalize( normalMatrix * vNormal);
-
-            // vec3 pointLightColor = ()
-
-            // perform diffuse calculation
-            diffuse = 0.5 * (materialColor * lightColor * max(dot(lightVector,  vNormalNew),0));
-
-            vec3 reflectance =  0.05 * (-spotLightDirection + 2 * (max(dot(vNormalNew, spotLightDirection),0)) * vNormalNew);
-
-            specular = 0.05 *( lightColor * materialColor * pow(max(dot(reflectance, viewDirection), 0),2));
-
-            ambient = 0.2 * lightColor * materialColor;
-            
-        }
-        //SPOT LIGHT ////
-    }
-        // assign the color for this vertex
-        color = diffuse  + specular + ambient;
+    // assign the color for this vertex
+    color = colorPoint + colorSpot + colorDir;
 }
