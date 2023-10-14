@@ -46,11 +46,9 @@ MPEngine::~MPEngine() {
 }
 
 void MPEngine::handleKeyEvent(GLint key, GLint action) {
-    if(key != GLFW_KEY_UNKNOWN && key != GLFW_KEY_6)
+    if(key != GLFW_KEY_UNKNOWN)
         _keys[key] = ((action == GLFW_PRESS) || (action == GLFW_REPEAT));
-    if (key == GLFW_KEY_6) {
-        _keys[key] = ((action == GLFW_PRESS));
-    }
+
     if(action == GLFW_PRESS) {
         switch( key ) {
             // quit!
@@ -694,20 +692,12 @@ void MPEngine::_updateScene() {
         _currentCamera = 5;
     }
     if (_keys[GLFW_KEY_6]) {
-        _firstPerson = not _firstPerson;
+        _firstPerson = true;
     }
     if (_keys[GLFW_KEY_7]) {
-        _currentLight = 7;
+        _firstPerson = false;
     }
-    if (_keys[GLFW_KEY_8]) {
-        _currentLight = 8;
-    }
-   if (_keys[GLFW_KEY_9]) {
-        _currentLight = 9;
-    }
-    // if (_keys[GLFW_KEY_9]) {
-        
-    // }
+
 
 
 }
